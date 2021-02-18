@@ -26,7 +26,13 @@ enum class E_Dir
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
 };
+
+enum class E_X_Dir{Not, Left, Right};
+enum class E_Y_Dir{Not, Down, Up};
+
+inline bool Is_X_Dir(E_Dir dir) { return (dir == E_Dir::LEFT) || (dir == E_Dir::RIGHT); }
+inline bool Is_Y_Dir(E_Dir dir) { return (dir == E_Dir::UP) || (dir == E_Dir::DOWN); }
 
 #endif

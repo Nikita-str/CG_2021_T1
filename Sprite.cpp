@@ -28,7 +28,7 @@ void Sprite::SpriteFromImg(Image &img0, int p_frames, int ms_on_frame, int scale
 
     for (int frame = 0; frame < frames; frame++, temp_x_now -= sz_w) {
         imgs.emplace_back(Image {sz_w, sz_h, chans});
-        img0.Draw(imgs[frame], {.x = temp_x_now, .y = 0});
+        img0.Draw(imgs[frame], {.x = temp_x_now, .y = 0}, false, false, true);
     }
 }
 

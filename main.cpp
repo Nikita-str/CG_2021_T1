@@ -50,14 +50,11 @@ void OnKeyboardPressed(GLFWwindow* window, int key, int scancode, int action, in
 
 void processPlayerMovement(Player &player)
 {
-  if (Input.keys[GLFW_KEY_W])
-    player.ProcessInput(E_Dir::UP);
-  else if (Input.keys[GLFW_KEY_S])
-    player.ProcessInput(E_Dir::DOWN);
-  if (Input.keys[GLFW_KEY_A])
-    player.ProcessInput(E_Dir::LEFT);
-  else if (Input.keys[GLFW_KEY_D])
-    player.ProcessInput(E_Dir::RIGHT);
+	bool U = Input.keys[GLFW_KEY_W];
+	bool D = Input.keys[GLFW_KEY_S];
+	bool L = Input.keys[GLFW_KEY_A];
+	bool R = Input.keys[GLFW_KEY_D];
+	player.RefreshMoveState(U, D, L, R);
 }
 
 void OnMouseButtonClicked(GLFWwindow* window, int button, int action, int mods)
@@ -173,13 +170,13 @@ int main(int argc, char** argv)
 
 	  glfwPollEvents();
 
-	  processPlayerMovement(player);
-
-	  player.Draw(screenBuffer);
 	  img.Draw(screenBuffer, {64 * 0,0});
 	  img.Draw(screenBuffer, {64 * 1,0}, true);
 	  img.Draw(screenBuffer, {64 * 2,0}, false, true);
 	  img.Draw(screenBuffer, {64 * 3,0}, true, true);
+
+	  processPlayerMovement(player);
+	  player.Draw(screenBuffer);
 
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_CHECK_ERRORS;
 	  glDrawPixels(WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer.Data()); GL_CHECK_ERRORS;

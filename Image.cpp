@@ -102,7 +102,7 @@ int Image::Save(const std::string &a_path)
   return 0;
 }
 
-void Image::Draw(Image &canvas, Point p, bool flip_OX, bool flip_OY) const
+void Image::Draw(Image &canvas, Point p, bool flip_OX, bool flip_OY, bool not_mix) const
 {
     int c_w;
     int c_h;
@@ -124,18 +124,31 @@ void Image::Draw(Image &canvas, Point p, bool flip_OX, bool flip_OY) const
     //for(int y = start_y; y < end_y; y++, this_x = this_x_zero, this_y++)
     //for(int x = start_x; x < end_x; x++, this_x++)
     //    canvas.MixPixel(x, y, GetPixel(this_x, this_y));
+    if (not_mix) {
+        #define Z(th_x, th_y)                                                \
+        for(int y = start_y; y < end_y; y++, this_x = this_x_zero, this_y++) \
+        for (int x = start_x; x < end_x; x++, this_x++)                      \
+            canvas.SetPixel(x, y, GetPixel(th_x, th_y))
 
-    #define Z(th_x, th_y)                                                \
-    for(int y = start_y; y < end_y; y++, this_x = this_x_zero, this_y++) \
-    for (int x = start_x; x < end_x; x++, this_x++)                      \
-        canvas.MixPixel(x, y, GetPixel(th_x, th_y))
+        if (!flip_OX && !flip_OY)Z(this_x, this_y);
+        else if (flip_OX && !flip_OY)Z(this_x, height - 1 - this_y);
+        else if (!flip_OX && flip_OY)Z(width - 1 - this_x, this_y);
+        else Z(width - 1 - this_x, height - 1 - this_y);
 
-    if (!flip_OX && !flip_OY)Z(this_x, this_y);
-    else if (flip_OX && !flip_OY)Z(this_x, height - 1 - this_y);
-    else if (!flip_OX && flip_OY)Z(width - 1 - this_x, this_y);
-    else /*if (flip_OY && flip_OX)*/Z(width - 1 - this_x, height - 1 - this_y);
-    
-    #undef Z
+        #undef Z
+    } else {
+        #define Z(th_x, th_y)                                                \
+        for(int y = start_y; y < end_y; y++, this_x = this_x_zero, this_y++) \
+        for (int x = start_x; x < end_x; x++, this_x++)                      \
+            canvas.MixPixel(x, y, GetPixel(th_x, th_y))
+
+        if (!flip_OX && !flip_OY)Z(this_x, this_y);
+        else if (flip_OX && !flip_OY)Z(this_x, height - 1 - this_y);
+        else if (!flip_OX && flip_OY)Z(width - 1 - this_x, this_y);
+        else Z(width - 1 - this_x, height - 1 - this_y);
+
+        #undef Z
+    }
 }
 
 void Image::PixelsChange(std::function<Pixel(Pixel)> PixFunc, bool with_hash_pixel)

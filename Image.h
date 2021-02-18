@@ -95,7 +95,7 @@ struct Image
 
   inline void  SetPixel(int x, int y, const Pixel &pix) { data[width * y + x] = pix; }
 
-  void Draw(Image &canvas, Point p, bool flip_OX = false, bool flip_OY = false) const;
+  void Draw(Image &canvas, Point p, bool flip_OX = false, bool flip_OY = false, bool not_mix = false) const;
 
   /// <summary>chnage image : image[x,y] = PixFunc(image[x,y])</summary>
   /// <param name="with_save_pixel">if we know that dif color on that image few then we can hash PixFunc result value</param>
