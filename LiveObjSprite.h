@@ -33,7 +33,7 @@ struct LiveObjSprite
             }
         }
 
-        cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
+        SetCurSprite();
     }
 
     bool SetDir(E_Dir new_dir)
@@ -66,8 +66,16 @@ struct LiveObjSprite
 private:
     void SpritePrepare()
     {
-        cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
+        SetCurSprite();
         cur_spr->Restart();
+    }
+
+    inline void SetCurSprite()
+    {
+        cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
+        if (cur_spr == nullptr) {
+            cur_spr = &spr_states.find(E_LiveObjState::Idle)->second.find(cur_dir)->second;
+        }
     }
 
     std::map< E_LiveObjState, std::map<E_Dir, Sprite>> spr_states;
