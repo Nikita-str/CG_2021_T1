@@ -80,6 +80,17 @@ Image::Image(Image&& a) noexcept : width(a.width), height(a.height), size(a.size
     a.data = nullptr;
 }
 
+Image::Image(const Image &copy, E_ImgRotation rot) : width(copy.height), height(copy.width), size(copy.size), channels(copy.channels)
+{
+    data = new Pixel[width * (size_t)height];
+    for (int y = 0; y < height; y++)
+    for (int x = 0; x < width; x++)
+        SetPixel(x, y, copy.GetPixel(height - 1 - y, x));
+
+    self_allocated = true;
+    return;
+}
+
 
 int Image::Save(const std::string &a_path)
 {

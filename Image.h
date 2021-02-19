@@ -47,6 +47,8 @@ inline bool operator< (const Pixel a, const Pixel b)
 
 constexpr Pixel backgroundColor{0, 0, 0, 0};
 
+enum class E_ImgRotation { Rot_90 };
+
 struct Image
 {
   explicit Image(const std::string &a_path);
@@ -58,6 +60,8 @@ struct Image
   Image(const Image &copy, int scale);
   Image(const Image &copy, int scale_x, int scale_y);
   
+  Image(const Image &copy, E_ImgRotation rot);
+
   Image(const Image &copy);
   Image(Image && a) noexcept;
 
