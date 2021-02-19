@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	  //GLfloat currentFrame = glfwGetTime();
 	  //deltaTime = currentFrame - lastFrame;
 	  //lastFrame = currentFrame;
-	  GameTime::Now()->SetCur(glfwGetTime());
+	  GameTime::Now().SetCur(glfwGetTime());
 
 	  glfwPollEvents();
 

@@ -3,14 +3,15 @@
 
 #include "LiveObjSprite.h"
 #include "General.h"
+#include "Movement.h"
 
 struct Player
 {
     //explicit Player(Point pos = {.x = 10, .y = 10}) : coords(pos), old_coords(coords) {};
 
-    explicit Player(Point pos, LiveObjSprite &sprite) : coords(pos), old_coords(coords), spr(sprite) {};
+    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) {};
 
-    bool Moved() const;
+    bool Moved();
     void Draw(Image &screen);
 
     inline void RefreshMoveState(bool up, bool down, bool left, bool right)
@@ -20,13 +21,14 @@ struct Player
     }
     void RefreshMoveState(E_X_Dir x, E_Y_Dir y);
 private:
-    void RefreshMoveState(E_Dir dir);
     E_Dir back_dir = E_Dir::DOWN;
 
-    Point coords {.x = 10, .y = 10};
-    Point old_coords {.x = 10, .y = 10};
+    Movement position;
+    Point coords {.x = 0, .y = 0};
+    Point old_coords {.x = 0, .y = 0};
+
     Pixel color {.r = 255, .g = 255, .b = 0, .a = 255};
-    int move_speed = 4;
+    int move_speed = 100;
 
     LiveObjSprite &spr;
 

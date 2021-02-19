@@ -121,9 +121,6 @@ void Image::Draw(Image &canvas, Point p, bool flip_OX, bool flip_OY, bool not_mi
     int this_x = this_x_zero;
     int this_y = (p.y < 0) ? -p.y : 0;
 
-    //for(int y = start_y; y < end_y; y++, this_x = this_x_zero, this_y++)
-    //for(int x = start_x; x < end_x; x++, this_x++)
-    //    canvas.MixPixel(x, y, GetPixel(this_x, this_y));
     if (not_mix) {
         #define Z(th_x, th_y)                                                \
         for(int y = start_y; y < end_y; y++, this_x = this_x_zero, this_y++) \

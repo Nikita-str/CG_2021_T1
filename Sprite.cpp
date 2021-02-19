@@ -48,7 +48,7 @@ Sprite::Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame, i
 
 void Sprite::Draw(Image &canvas, const Point p, bool flip_OX, bool flip_OY)
 {
-    double dt = GameTime::Now()->GetSecAfter(time_start_prev_frame);
+    double dt = GameTime::Now().GetSecAfter(time_start_prev_frame);
     if (dt < 0)dt = 0;
     
     int add_frame = 0;

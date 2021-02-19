@@ -11,7 +11,7 @@ struct GameTime
     //explicit GameTime(double time) : cur_sec(time) {};
     //static GameTime NowTime;
 
-    static GameTime* Now() { static GameTime ret {}; return &ret; }
+    static GameTime& Now() { static GameTime ret {}; return ret; }
 
     inline void SetCur(double sec) { cur_sec = sec; }
     inline double GetSecAfter(double time_sec) { return cur_sec - time_sec; }
