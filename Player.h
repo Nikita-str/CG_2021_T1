@@ -11,6 +11,8 @@ struct Player
 
     explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) {};
 
+    void Attack();
+
     bool Moved();
     void Draw(Image &screen);
 
@@ -31,6 +33,9 @@ private:
     int move_speed = 100;
 
     LiveObjSprite &spr;
+
+    bool now_attack = false;
+    double blocked_to_time = -0.0;
 
 };
 

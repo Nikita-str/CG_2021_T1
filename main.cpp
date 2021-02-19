@@ -50,6 +50,9 @@ void OnKeyboardPressed(GLFWwindow* window, int key, int scancode, int action, in
 
 void processPlayerMovement(Player &player)
 {
+	bool X = Input.keys[GLFW_KEY_X];
+	if (X)player.Attack();
+
 	bool U = Input.keys[GLFW_KEY_W];
 	bool D = Input.keys[GLFW_KEY_S];
 	bool L = Input.keys[GLFW_KEY_A];

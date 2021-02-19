@@ -16,6 +16,7 @@ struct GameTime
     inline void SetCur(double sec) { cur_sec = sec; }
     inline double GetSecAfter(double time_sec) { return cur_sec - time_sec; }
     inline double GetTime() { return cur_sec; }
+    inline bool TimeCome(double event_time) { return cur_sec >= event_time; }
 
 private:
     double cur_sec = 0;

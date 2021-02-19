@@ -53,7 +53,12 @@ void Sprite::Draw(Image &canvas, const Point p, bool flip_OX, bool flip_OY)
     
     int add_frame = 0;
 
-    if (dt > s_per_frame) {
+    if (time_start_prev_frame < 0) {
+        time_start_prev_frame = GameTime::Now().GetTime();
+        add_frame = 0;
+        frame_now = 0;
+    }
+    else if (dt > s_per_frame) {
         add_frame = (int)(dt / s_per_frame);
         time_start_prev_frame += add_frame * s_per_frame;
     }

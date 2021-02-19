@@ -1,10 +1,20 @@
 #include "Player.h"
 
 
-bool Player::Moved() { return position.Moved(); }
+void Player::Attack()
+{
+    if (spr.SetState(E_LiveObjState::Attack)) {
+        blocked_to_time = GameTime::Now().GetTime() + spr.GetCurAnimTime();
+        now_attack = true;
+    }
+}
+
+bool Player::Moved() { return !now_attack && position.Moved(); }
 
 void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y)
 {
+    if (now_attack) { position.UpdateLastTime(); return; }
+
     old_coords = coords;
 
     position.Move((x == E_X_Dir::Not) ? 0 : ((x == E_X_Dir::Right) ? 1 : -1),
@@ -40,5 +50,9 @@ void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y)
 
 void Player::Draw(Image &screen)
 {
+    if (now_attack && GameTime::Now().TimeCome(blocked_to_time)) {
+        now_attack = false;
+        spr.SetState(E_LiveObjState::Idle);
+    }
     spr.Draw(screen, coords, true);
 }

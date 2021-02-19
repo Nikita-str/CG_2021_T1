@@ -7,6 +7,9 @@ struct Movement
 {
     Movement(int _x, int _y) : x(_x), y(_y) { last_time = GameTime::Now().GetTime(); }
     Movement(Point pos) : Movement(pos.x, pos.y) { }
+
+    void UpdateLastTime() { last_time = GameTime::Now().GetTime(); }
+
     void Move(int dx, int dy, int speed)
     {
         double now_t = GameTime::Now().GetTime();
