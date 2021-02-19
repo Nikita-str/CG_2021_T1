@@ -32,6 +32,8 @@ struct LiveObjSprite
                 now_state.insert({iter->first, Sprite(img_path, spr_sz, ms_on_frame, scale)});
             }
         }
+
+        cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
     }
 
     bool SetDir(E_Dir new_dir)
@@ -54,24 +56,25 @@ struct LiveObjSprite
         return false;
     }
 
-    //TODO: save spr_states.find(cur_state)->second.find(cur_dir)->second.
-
-    double GetCurAnimTime() const { return spr_states.find(cur_state)->second.find(cur_dir)->second.AnimTime(); }
+    double GetCurAnimTime() const { return cur_spr->AnimTime(); }
 
     void Draw(Image &canvas, const Point p, bool flip_OX = true, bool flip_OY = false)
     {
-        spr_states.find(cur_state)->second.find(cur_dir)->second.Draw(canvas, p, flip_OX, flip_OY);
+        cur_spr->Draw(canvas, p, flip_OX, flip_OY);
     }
 
 private:
     void SpritePrepare()
     {
-        spr_states.find(cur_state)->second.find(cur_dir)->second.Restart();
+        cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
+        cur_spr->Restart();
     }
 
     std::map< E_LiveObjState, std::map<E_Dir, Sprite>> spr_states;
     E_Dir cur_dir = E_Dir::DOWN;
     E_LiveObjState cur_state = E_LiveObjState::Idle;
+
+    Sprite *cur_spr = nullptr;
 };
 
 #endif
