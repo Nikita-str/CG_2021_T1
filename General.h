@@ -1,5 +1,9 @@
 #ifndef MAIN_GENERAL_H
 #define MAIN_GENERAL_H
+
+#include <iostream>
+#include <string>
+
 struct Point
 {
     int x;
@@ -33,7 +37,14 @@ enum class E_Dir
 enum class E_X_Dir{Not, Left, Right};
 enum class E_Y_Dir{Not, Down, Up};
 
-inline bool Is_X_Dir(E_Dir dir) { return (dir == E_Dir::LEFT) || (dir == E_Dir::RIGHT); }
-inline bool Is_Y_Dir(E_Dir dir) { return (dir == E_Dir::UP) || (dir == E_Dir::DOWN); }
+static inline bool Is_X_Dir(E_Dir dir) { return (dir == E_Dir::LEFT) || (dir == E_Dir::RIGHT); }
+static inline bool Is_Y_Dir(E_Dir dir) { return (dir == E_Dir::UP) || (dir == E_Dir::DOWN); }
+
+static inline void error(std::string s) { std::cout << s << std::endl; std::exit(1); }
+
+static inline void end_trim(std::string &s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char c) {return !std::isspace(c);}).base(), s.end());
+}
 
 #endif

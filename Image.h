@@ -67,9 +67,10 @@ struct Image
 
   Image &operator=(const Image &other)
   {
-      std::abort();
+      error("oh no...");
       return *this;
   }
+
   Image &operator=(Image &&other) noexcept
   {
       if (&other == this)return *this;

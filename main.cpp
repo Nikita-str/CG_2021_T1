@@ -3,6 +3,7 @@
 #include "Player.h"
 
 #include "Sprite.h"
+#include "GameMap.h"
 
 #define GLFW_DLL
 #include <GLFW/glfw3.h>
@@ -164,6 +165,7 @@ int main(int argc, char** argv)
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GL_CHECK_ERRORS;
 
+  GameMap gmap{};
 
   Image img90 {img, E_ImgRotation::Rot_90};
   //game loop
