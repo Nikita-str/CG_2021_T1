@@ -6,6 +6,8 @@
 #include "General.h"
 #include "Image.h"
 
+#include <memory>
+
 struct SpritePixSz
 {
     int width;
@@ -30,7 +32,7 @@ private:
     double s_per_frame = 0.075;
 
     double time_start_prev_frame = -1;
-    std::vector<Image> imgs;
+    std::vector<std::unique_ptr<Image>> imgs;
 };
 
 #endif

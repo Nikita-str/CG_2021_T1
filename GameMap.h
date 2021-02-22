@@ -2,9 +2,16 @@
 #define MAIN_Gmap_H
 
 #include <vector>
+#include <map>
 #include <string>
-#include "General.h"
+#include <memory>
 
+#include "General.h"
+#include "Image.h"
+
+static constexpr int TILE_SZ = 32;
+
+typedef std::unique_ptr<Image> uptr_img;
 
 struct GameMap
 {
@@ -18,7 +25,7 @@ struct GameMap
     GameMap();
 
 private:
-    void load(char room_type);
+    void load_room(int x, int y);
 
     struct GameRoomInfo // general, lfrom that you need copy data into other class, that changeble it's staitc info!
     {
@@ -28,12 +35,23 @@ private:
         std::vector<Point> door_pos{}; // point - pos
         std::vector< std::pair<Point, int>> items{}; // point - pos,  int - rarity
         std::vector<Point> keys_pos{}; // point - pos
-        //enemies: std::vector<>;
-        //items: std::vector<>;
+        int map_width = -1;
+        int map_height = -1;
+    };
+
+    struct GameRoom
+    {
+        GameMap::GameRoomInfo &gri;
+        uptr_img room_holst;
+        GameRoom(GameMap::GameRoomInfo &_gri);
     };
 
     std::vector<std::string> room_map;
+    std::vector<std::vector<GameRoom>> loaded_room{};
+    std::map<char, GameRoomInfo> loaded_room_info {};
 
+
+    
     int now_x = 0;
     int now_y = 0;
 };

@@ -18,7 +18,17 @@ GameMap::GameMap() : room_map()
     
     file.close();
 
+    load_room(now_x, now_y);
 }
+
+void GameMap::load_room(int x, int y)
+{
+    char key = room_map[y][x];
+    if (!loaded_room_info.contains(key))loaded_room_info.insert(std::pair {key, GameRoomInfo{key}});
+    //TODO
+}
+
+
 
 
 GameMap::GameRoomInfo::GameRoomInfo(char room_type)
@@ -32,8 +42,8 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     bool z_open = false;
     bool z_already_was_open = false;
 
-    int map_width = -1;
-    int map_height = 0;
+    map_width = -1;
+    map_height = 0;
 
     while (std::getline(file, line)) {
         end_trim(line);
@@ -95,7 +105,7 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
                     if(ind != sz - 1) continue;
                 }
                 if (!was_num)continue;
-                if (enemies.size() <= E_index)error("to many items, on map they stay less!");
+                if (enemies.size() <= E_index)error("too many enemies, on map they stay less!");
                 enemies[E_index++].second = now_value;
                 was_num = false;
                 now_value = 0;
@@ -114,7 +124,7 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
                     if (ind != sz - 1) continue;
                 }
                 if (!was_num)continue;
-                if (items.size() <= I_index)error("to many items, on map they stay less!");
+                if (items.size() <= I_index)error("too many items, on map they stay less!");
                 items[I_index++].second = now_value;
                 was_num = false;
                 now_value = 0;

@@ -165,7 +165,7 @@ int main(int argc, char** argv)
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GL_CHECK_ERRORS;
 
-  GameMap gmap{};
+  //GameMap gmap{};
 
   Image img90 {img, E_ImgRotation::Rot_90};
   //game loop
