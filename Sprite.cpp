@@ -13,7 +13,7 @@ void Sprite::SpriteFromImg(Image &img0, int p_frames, int ms_on_frame, int scale
     }
 
     if (frames == 1) {
-        imgs.emplace_back(Image {img0});
+        imgs.emplace_back(img0);
         return;
     }
 
@@ -27,8 +27,8 @@ void Sprite::SpriteFromImg(Image &img0, int p_frames, int ms_on_frame, int scale
     int temp_x_now = 0;
 
     for (int frame = 0; frame < frames; frame++, temp_x_now -= sz_w) {
-        imgs.emplace_back(Image {sz_w, sz_h, chans});
-        img0.Draw(*imgs[frame], {.x = temp_x_now, .y = 0}, false, false, true);
+        imgs.emplace_back(sz_w, sz_h, chans);
+        img0.Draw(imgs[frame], {.x = temp_x_now, .y = 0}, false, false, true);
     }
 }
 
@@ -65,5 +65,5 @@ void Sprite::Draw(Image &canvas, const Point p, bool flip_OX, bool flip_OY)
 
     frame_now = (frame_now + add_frame) % frames;
 
-    (*imgs[frame_now]).Draw(canvas, p, flip_OX, flip_OY);
+    imgs[frame_now].Draw(canvas, p, flip_OX, flip_OY);
 }

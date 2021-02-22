@@ -4,14 +4,12 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <memory>
 
 #include "General.h"
 #include "Image.h"
 
 static constexpr int TILE_SZ = 32;
 
-typedef std::unique_ptr<Image> uptr_img;
 
 struct GameMap
 {
@@ -42,7 +40,7 @@ private:
     struct GameRoom
     {
         GameMap::GameRoomInfo &gri;
-        uptr_img room_holst;
+        Image room_holst;
         GameRoom(GameMap::GameRoomInfo &_gri);
     };
 
