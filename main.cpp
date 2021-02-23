@@ -188,8 +188,8 @@ int main(int argc, char** argv)
 
 	  glfwPollEvents();
 
-	  gmap.Draw(screenBuffer);
-	  
+	  gmap.Draw(screenBuffer); //slow
+	  //fast:glDrawPixels(gmap.now_room->room_holst.Width(), gmap.now_room->room_holst.Height(), GL_RGBA, GL_UNSIGNED_BYTE, gmap.now_room->room_holst.Data()); GL_CHECK_ERRORS;
 
 	  //img.Draw(screenBuffer, {64 * 0,0});
 	  //img90.Draw(screenBuffer, {64 * 1,0});

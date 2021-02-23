@@ -25,7 +25,7 @@ struct GameMap
 
     void Draw(Image &canvas);
 
-private:
+//private:
     void load_room(int x, int y);
 
     struct GameRoomInfo // general, lfrom that you need copy data into other class, that changeble it's staitc info!
