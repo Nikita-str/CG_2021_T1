@@ -27,7 +27,7 @@ void GameMap::load_room(int x, int y)
     if (!loaded_room_info.contains(key))loaded_room_info.insert(std::pair {key, GameRoomInfo{key}});
 
     if (!loaded_room.contains({x, y})) {
-        loaded_room.emplace(Point{x,y}, GameRoom(loaded_room_info[key], *this));
+        loaded_room.emplace(Point {x,y}, GameRoom(loaded_room_info.find(key)->second, *this));
     } 
 
     now_room = &(loaded_room.find(Point {x,y})->second);
@@ -110,23 +110,23 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
             tile_type.emplace_back();
             for (int i = 0; i < sz; i++) {
                 char c = line[i];
-                if (c == '#')tile_type[map_height][i] = GameMap::E_TileType::Wall;
-                else if (c == ' ')tile_type[map_height][i] = GameMap::E_TileType::Empty;
-                else if (c == '.')tile_type[map_height][i] = GameMap::E_TileType::Floor;
+                if (c == '#')tile_type[map_height].push_back(GameMap::E_TileType::Wall);
+                else if (c == ' ')tile_type[map_height].push_back(GameMap::E_TileType::Empty);
+                else if (c == '.')tile_type[map_height].push_back(GameMap::E_TileType::Floor);
                 else if (c == 'O') {
-                    tile_type[map_height][i] = GameMap::E_TileType::Floor;
+                    tile_type[map_height].push_back(GameMap::E_TileType::Floor);
                     door_pos.emplace_back(Point {.x = i, .y = map_height});
                 } 
                 else if (c == 'E') {
-                    tile_type[map_height][i] = GameMap::E_TileType::Floor;
+                    tile_type[map_height].push_back(GameMap::E_TileType::Floor);
                     enemies.emplace_back(std::pair(Point {.x = i, .y = map_height}, 0));
                 }
                 else if (c == 'I') {
-                    tile_type[map_height][i] = GameMap::E_TileType::Floor;
+                    tile_type[map_height].push_back(GameMap::E_TileType::Floor);
                     items.emplace_back(std::pair(Point {.x = i, .y = map_height}, 0));
                 } 
                 else if (c == 'K') {
-                    tile_type[map_height][i] = GameMap::E_TileType::Floor;
+                    tile_type[map_height].push_back(GameMap::E_TileType::Floor); 
                     keys_pos.emplace_back(Point {.x = i, .y = map_height});
                 }
                 else error("unknown type of tile '" + line.substr(0, 1) + "'");

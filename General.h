@@ -10,6 +10,13 @@ struct Point
     int y;
 };
 
+inline bool operator< (const Point a, const Point b)
+{
+    if (a.x != b.x)return a.x < b.x;
+    return a.y < b.y;
+}
+
+
 struct GameTime
 {
     //explicit GameTime(double time) : cur_sec(time) {};

@@ -165,7 +165,7 @@ int main(int argc, char** argv)
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GL_CHECK_ERRORS;
 
-  //GameMap gmap{};
+  GameMap gmap{};
 
   Image img90 {img, E_ImgRotation::Rot_90};
   //game loop
@@ -177,8 +177,11 @@ int main(int argc, char** argv)
 
 	  glfwPollEvents();
 
-	  img.Draw(screenBuffer, {64 * 0,0});
-	  img90.Draw(screenBuffer, {64 * 1,0});
+	  gmap.Draw(screenBuffer);
+
+	  //img.Draw(screenBuffer, {64 * 0,0});
+	  //img90.Draw(screenBuffer, {64 * 1,0});
+	  
 	  //img.Draw(screenBuffer, {64 * 1,0}, true);
 	  //img.Draw(screenBuffer, {64 * 2,0}, false, true);
 	  //img.Draw(screenBuffer, {64 * 3,0}, true, true);
