@@ -169,15 +169,27 @@ int main(int argc, char** argv)
 
   Image img90 {img, E_ImgRotation::Rot_90};
   //game loop
+
+  double sec = GameTime::Now().GetTime();
+  int frames = 0;
+
   while (!glfwWindowShouldClose(window)) {
 	  //GLfloat currentFrame = glfwGetTime();
 	  //deltaTime = currentFrame - lastFrame;
 	  //lastFrame = currentFrame;
 	  GameTime::Now().SetCur(glfwGetTime());
 
+	  if (GameTime::Now().GetTime() - sec > 1) {
+		  sec = GameTime::Now().GetTime();
+		  std::cout <<"fps : " << frames << std::endl;
+		  frames = 0;
+	  }
+	  frames++;
+
 	  glfwPollEvents();
 
 	  gmap.Draw(screenBuffer);
+	  
 
 	  //img.Draw(screenBuffer, {64 * 0,0});
 	  //img90.Draw(screenBuffer, {64 * 1,0});
