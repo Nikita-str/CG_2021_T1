@@ -159,6 +159,11 @@ void Image::Draw(Image &canvas, Point p, bool flip_OX, bool flip_OY, bool not_mi
     }
 }
 
+void Image::FastDraw(Image &canvas, int lines, int from_line) const
+{
+    std::memcpy(canvas.data + (from_line * canvas.width), data, canvas.width * lines * sizeof(Pixel));
+}
+
 void Image::PixelsChange(std::function<Pixel(Pixel)> PixFunc, bool with_hash_pixel)
 {
     if (!with_hash_pixel) {

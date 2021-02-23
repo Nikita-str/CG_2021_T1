@@ -35,7 +35,7 @@ void GameMap::load_room(int x, int y)
 
 void GameMap::Draw(Image &canvas)
 {
-    now_room->room_holst.Draw(canvas, {.x = 0, .y = 0});
+    now_room->room_holst.FastDraw(canvas, now_room->gri.map_height * TILE_SZ);
 }
 
 GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri(_gri), parent(_parent), 

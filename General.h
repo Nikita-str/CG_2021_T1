@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 
+static constexpr int W_WIDTH = 1024;
+static constexpr int W_HEIGHT = 720;
+
 struct Point
 {
     int x;

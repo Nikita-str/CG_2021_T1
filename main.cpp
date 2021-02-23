@@ -8,7 +8,7 @@
 #define GLFW_DLL
 #include <GLFW/glfw3.h>
 
-constexpr GLsizei WINDOW_WIDTH = 1024, WINDOW_HEIGHT = 720;
+constexpr GLsizei WINDOW_WIDTH = W_WIDTH, WINDOW_HEIGHT = W_HEIGHT;
 
 const std::string PATH {"../resources/"};
 const std::string HERO_0 {PATH + "Char_one/"};
@@ -168,15 +168,11 @@ int main(int argc, char** argv)
   GameMap gmap{};
 
   Image img90 {img, E_ImgRotation::Rot_90};
-  //game loop
 
   double sec = GameTime::Now().GetTime();
   int frames = 0;
 
   while (!glfwWindowShouldClose(window)) {
-	  //GLfloat currentFrame = glfwGetTime();
-	  //deltaTime = currentFrame - lastFrame;
-	  //lastFrame = currentFrame;
 	  GameTime::Now().SetCur(glfwGetTime());
 
 	  if (GameTime::Now().GetTime() - sec > 1) {
@@ -188,15 +184,7 @@ int main(int argc, char** argv)
 
 	  glfwPollEvents();
 
-	  gmap.Draw(screenBuffer); //slow
-	  //fast:glDrawPixels(gmap.now_room->room_holst.Width(), gmap.now_room->room_holst.Height(), GL_RGBA, GL_UNSIGNED_BYTE, gmap.now_room->room_holst.Data()); GL_CHECK_ERRORS;
-
-	  //img.Draw(screenBuffer, {64 * 0,0});
-	  //img90.Draw(screenBuffer, {64 * 1,0});
-	  
-	  //img.Draw(screenBuffer, {64 * 1,0}, true);
-	  //img.Draw(screenBuffer, {64 * 2,0}, false, true);
-	  //img.Draw(screenBuffer, {64 * 3,0}, true, true);
+	  gmap.Draw(screenBuffer); 
 
 	  processPlayerMovement(player);
 	  player.Draw(screenBuffer);
