@@ -7,6 +7,7 @@
 
 #include "General.h"
 #include "Image.h"
+#include "RandImage.h"
 
 static constexpr int TILE_SZ = 32;
 
@@ -21,6 +22,8 @@ struct GameMap
     };
 
     GameMap();
+
+    void Draw(Image &canvas);
 
 private:
     void load_room(int x, int y);
@@ -39,16 +42,22 @@ private:
 
     struct GameRoom
     {
+        std::vector<std::vector<int>> map_ids{};
         GameMap::GameRoomInfo &gri;
         Image room_holst;
-        GameRoom(GameMap::GameRoomInfo &_gri);
+        GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent);
+    private:
+        GameMap &parent;
     };
 
-    std::vector<std::string> room_map;
-    std::vector<std::vector<GameRoom>> loaded_room{};
+    std::vector<std::string> room_map {};
+    std::map<Point, GameRoom> loaded_room{};
     std::map<char, GameRoomInfo> loaded_room_info {};
 
+    RandImage floor_img;
+    Image empty_img;
 
+    GameMap::GameRoom *now_room = nullptr;
     
     int now_x = 0;
     int now_y = 0;

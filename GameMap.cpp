@@ -3,7 +3,7 @@
 
 const std::string MAP_PATH {"../maps/"};
 
-GameMap::GameMap() : room_map()
+GameMap::GameMap() : floor_img("../resources/floor", 6), empty_img("../resources/empty.png")
 {
     std::ifstream file {MAP_PATH + "M_OF_M.txt"};
 
@@ -25,10 +25,51 @@ void GameMap::load_room(int x, int y)
 {
     char key = room_map[y][x];
     if (!loaded_room_info.contains(key))loaded_room_info.insert(std::pair {key, GameRoomInfo{key}});
-    //TODO
+
+    if (!loaded_room.contains({x, y})) {
+        loaded_room.emplace(Point{x,y}, GameRoom(loaded_room_info[key], *this));
+    } 
+
+    now_room = &(loaded_room.find(Point {x,y})->second);
 }
 
+void GameMap::Draw(Image &canvas)
+{
+    now_room->room_holst.Draw(canvas, {.x = 0, .y = 0});
+}
 
+GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri(_gri), parent(_parent), 
+                                                                             room_holst(_gri.map_width * TILE_SZ, _gri.map_height * TILE_SZ, 4)
+{
+    for (int y = 0; y < gri.map_height; y++) {
+        map_ids.emplace_back();
+        for (int x = 0; x < gri.map_width; x++){
+            Point draw_point {.x = x * TILE_SZ, .y = (gri.map_height - 1 - y) * TILE_SZ};
+            switch (gri.tile_type[y][x]) {
+            case E_TileType::Floor:
+            {
+                int id = parent.floor_img.GetRandImageId((x + y) % 2);
+                map_ids[y].push_back(id);
+                parent.floor_img.Draw(id, room_holst, draw_point);
+                break;
+            }
+            case E_TileType::Wall:
+            {
+                map_ids[y].push_back(0);
+                //TODO
+                break;
+            }
+            case E_TileType::Empty:
+            {
+                map_ids[y].push_back(0);
+                parent.empty_img.Draw(room_holst, draw_point);
+                break;
+            }
+            default: error("this type not expected ... what?"); break;
+            }
+        }
+    }
+}
 
 
 GameMap::GameRoomInfo::GameRoomInfo(char room_type)
