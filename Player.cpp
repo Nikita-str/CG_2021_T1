@@ -1,5 +1,6 @@
 #include "Player.h"
 
+Player *Player::player_getter;
 
 void Player::Attack()
 {

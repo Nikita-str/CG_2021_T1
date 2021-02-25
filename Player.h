@@ -8,8 +8,11 @@
 struct Player
 {
     //explicit Player(Point pos = {.x = 10, .y = 10}) : coords(pos), old_coords(coords) {};
+private: static Player *player_getter;
+public:
+    static Player &Get() { return *player_getter; }
 
-    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) {};
+    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) { player_getter = this; };
 
     void Attack();
 
@@ -22,6 +25,9 @@ struct Player
                          (up == down) ? E_Y_Dir::Not : (up ? E_Y_Dir::Up : E_Y_Dir::Down));
     }
     void RefreshMoveState(E_X_Dir x, E_Y_Dir y);
+
+    void KeyInc() { keys++; }
+    void KeyDec() { keys--; }
 private:
     E_Dir back_dir = E_Dir::DOWN;
 
@@ -37,6 +43,7 @@ private:
     bool now_attack = false;
     double blocked_to_time = -0.0;
 
+    int keys = 0;
 };
 
 #endif //MAIN_PLAYER_H

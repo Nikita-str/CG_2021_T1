@@ -9,6 +9,22 @@
 #include "Image.h"
 #include "RandImage.h"
 
+
+struct GameMap;
+#include "Item.h"
+struct MapObj
+{
+    MapObj(GameMap &_parent) : items(), parent(_parent) {};
+    //void AddItem(Point pos, int rarity);
+    void AddKey(Point pos);
+
+    void DrawItems(Image &canvas);
+private:
+    std::vector<Item> items {};
+    GameMap &parent;
+};
+
+
 static constexpr int TILE_SZ = 32;
 
 
@@ -25,7 +41,14 @@ struct GameMap
 
     void Draw(Image &canvas);
 
-//private:
+    template <typename T> void DrawOn(T &img_for_draw, Point map_pos, Image &canvas)
+    {
+        int map_x = map_pos.x;
+        int map_y = map_pos.y;
+        img_for_draw.Draw(canvas, {.x = map_x * TILE_SZ + (TILE_SZ - img_for_draw.Width()) / 2, .y = map_y * TILE_SZ + (TILE_SZ - img_for_draw.Height()) / 2}, true);
+    }
+
+private:
     void load_room(int x, int y);
 
     struct GameRoomInfo // general, lfrom that you need copy data into other class, that changeble it's staitc info!
@@ -46,6 +69,7 @@ struct GameMap
         GameMap::GameRoomInfo &gri;
         Image room_holst;
         GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent);
+        MapObj map_objects;
     private:
         GameMap &parent;
     };

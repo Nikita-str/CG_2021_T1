@@ -22,6 +22,9 @@ struct Sprite
     void Restart() { time_start_prev_frame = GameTime::Now().GetTime(); frame_now = 0; }
 
     double AnimTime() const { return s_per_frame * frames; }
+
+    int Width()const { return imgs[frame_now].Width(); }
+    int Height()const { return imgs[frame_now].Height(); }
 private:
     void SpriteFromImg(Image &img, int p_frames, int ms_on_frame = 125, int scale = 1);
 

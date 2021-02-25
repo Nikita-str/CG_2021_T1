@@ -35,16 +35,20 @@ void GameMap::load_room(int x, int y)
 
 void GameMap::Draw(Image &canvas)
 {
-    now_room->room_holst.FastDraw(canvas, now_room->gri.map_height * TILE_SZ);
+    now_room->room_holst.FastDraw(canvas, now_room->room_holst.Height());
+
+    now_room->map_objects.DrawItems(canvas);
 }
 
-GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri(_gri), parent(_parent), 
-                                                                             room_holst(_gri.map_width * TILE_SZ, _gri.map_height * TILE_SZ, 4)
+GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri(_gri), parent(_parent), map_objects(_parent),
+                                                                             room_holst(W_WIDTH, W_HEIGHT, 4)
 {
+    auto get_draw_point = [&](int x, int y) {return Point {.x = x * TILE_SZ, .y = (gri.map_height - 1 - y) * TILE_SZ}; };
+
     for (int y = 0; y < gri.map_height; y++) {
         map_ids.emplace_back();
         for (int x = 0; x < gri.map_width; x++){
-            Point draw_point {.x = x * TILE_SZ, .y = (gri.map_height - 1 - y) * TILE_SZ};
+            Point draw_point = get_draw_point(x, y);
             switch (gri.tile_type[y][x]) {
             case E_TileType::Floor:
             {
@@ -68,7 +72,17 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
             default: error("this type not expected ... what?"); break;
             }
         }
+        
+        for (int x = gri.map_width; x < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; x++)  // fill with empty tile line to end
+            parent.empty_img.Draw(room_holst, get_draw_point(x, y));
     }
+
+    for (int y = gri.map_height; y < (W_HEIGHT + TILE_SZ - 1) / TILE_SZ; y++) // fill all line to ...
+        for (int x = 0; x < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; x++) // fill with empty tile line to end
+            parent.empty_img.Draw(room_holst, {x * TILE_SZ, y * TILE_SZ});
+
+    for (int i = 0; i < gri.keys_pos.size(); i++)map_objects.AddKey(gri.keys_pos[i]);
+
 }
 
 
@@ -174,4 +188,6 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
         else error("wrong line : " + line);
     }
     file.close();
+
+    for (int i = 0; i < keys_pos.size(); i++)keys_pos[i].y = map_height - 1 - keys_pos[i].y;
 }
