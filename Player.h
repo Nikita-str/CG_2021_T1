@@ -12,7 +12,10 @@ private: static Player *player_getter;
 public:
     static Player &Get() { return *player_getter; }
 
-    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) { player_getter = this; };
+    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) 
+    {
+        position.SetSize(Size {.w = 29, .h = 29}); player_getter = this;
+    };
 
     void Attack();
 

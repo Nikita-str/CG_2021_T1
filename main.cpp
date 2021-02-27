@@ -152,22 +152,24 @@ int main(int argc, char** argv)
 	while (gl_error != GL_NO_ERROR)
 		gl_error = glGetError();
 
-	Point starting_pos{.x = WINDOW_WIDTH / 2, .y = WINDOW_HEIGHT / 2};
 
+	GameMap gmap{};
+	
 	LiveObjSprite player_img {HERO_0, SpritePixSz{16}, 125, 2};
-	Player player{starting_pos, player_img};
+	Player player {gmap.GetPos(GameMap::E_MapPos::Center, Size{.w = 30, .h = 32}), player_img
+};
 
 	//Image img(HERO_0 + "Walk/down.png");
+	/*
 	Image img(PATH + "floor_3.png");
 	img.PixelsChange([](auto x) {Pixel pix {x}; pix.r = pix.r * 2 + 10; return pix; }, true);
+	Image img90 {img, E_ImgRotation::Rot_90};
+	*/
+
 	Image screenBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, 4);
 
-  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GL_CHECK_ERRORS;
-
-  GameMap gmap{};
-
-  Image img90 {img, E_ImgRotation::Rot_90};
+	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GL_CHECK_ERRORS;
 
   double sec = GameTime::Now().GetTime();
   int frames = 0;

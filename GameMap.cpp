@@ -1,10 +1,14 @@
 #include "GameMap.h"
 #include <fstream>
 
+GameMap *GameMap::cur_map;
+
 const std::string MAP_PATH {"../maps/"};
 
-GameMap::GameMap() : floor_img("../resources/floor", 6), empty_img("../resources/empty.png")
+GameMap::GameMap() : floor_img("../resources/floor", 6), empty_img("../resources/empty.png"), wall_img("../resources/wall.png")
 {
+    cur_map = this;
+
     std::ifstream file {MAP_PATH + "M_OF_M.txt"};
 
     std::string line;
@@ -20,6 +24,17 @@ GameMap::GameMap() : floor_img("../resources/floor", 6), empty_img("../resources
 
     load_room(now_x, now_y);
 }
+
+Point GameMap::GetPos(E_MapPos map_pos, Size obj_sz)
+{
+    switch (map_pos) {
+    case GameMap::E_MapPos::Center: 
+        return Point {.x = (PixWidth() - obj_sz.w) / 2, .y = (PixHeight() - obj_sz.h) / 2};
+
+    default: return Point {0,0}; break;
+    }
+}
+
 
 void GameMap::load_room(int x, int y)
 {
@@ -60,7 +75,7 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
             case E_TileType::Wall:
             {
                 map_ids[y].push_back(0);
-                //TODO
+                parent.wall_img.Draw(room_holst, draw_point);
                 break;
             }
             case E_TileType::Empty:

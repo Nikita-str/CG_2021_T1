@@ -19,6 +19,13 @@ inline bool operator< (const Point a, const Point b)
     return a.y < b.y;
 }
 
+struct Size
+{
+    int w;
+    int h;
+    bool IsEmpty()const { return w == 0 && h == 0; }
+};
+
 
 struct GameTime
 {
