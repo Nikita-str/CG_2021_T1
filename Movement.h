@@ -70,51 +70,8 @@ struct Movement
                     last_moved_time = now_t;
                     moved = true;
                 }
-                //re realise by 
-                /*
-                save back x and y
-                x += dt * dx * speed;
-                y += dt * dy * speed;
-                check can be new x< if no : -1(+1) and check repeat while new != back
-                */
-                /*
-                Point back_pos = Point {.x = (int)x, .y = (int)y};
-                
-                #define A(cc)                                         \
-                double add_##cc = dt * (d##cc + saved_d##cc) * speed; \
-                int i_add_##cc = (int)(add_##cc);                     \
-                if (i_add_##cc == 0)saved_d##cc += d##cc; else saved_d##cc = 0;   
 
-                A(x);
-                A(y); 
-                
-                #undef A
-
-                Point now_pos = Point {.x = (int)(x + i_add_x), .y = (int)(y + i_add_y)};
-
-                int now_x = now_pos.x == back_pos.x ? now_pos.x : GameMap::GetCur()->MoveX(back_pos, now_pos.x, obj_size);
-                bool move_x = now_x != back_pos.x;
-
-                if (now_pos.x - back_pos.x > 3) {
-                    std::cout << "[TODO:DEL] : " << i_add_x << " : " << i_add_y << std::endl;
-                    
-                }
-
-                if (move_x) {
-                    saved_dx = 0;
-                    x = now_x;
-                }
-                int now_y = now_pos.y == back_pos.y ? now_pos.y : GameMap::GetCur()->MoveY(back_pos, now_pos.y, obj_size);
-                bool move_y = now_y != back_pos.y; 
-                if (move_y) {
-                    saved_dy = 0;
-                    y = now_y;
-                }
-
-                if(move_x || move_y)last_moved_time = now_t;
-                */
             }
-            //moved = true;
 
         }
 
