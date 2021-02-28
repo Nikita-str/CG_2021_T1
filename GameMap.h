@@ -60,9 +60,9 @@ public:
     bool CanStay(E_CanStayType stay_type, Point pos, Size obj_sz, bool empty_can)
     {
         Point LD {.x = pos.x, .y = pos.y};
-        Point LU {.x = pos.x, .y = pos.y + obj_sz.h};
-        Point RU {.x = pos.x + obj_sz.w, .y = pos.y + obj_sz.h};
-        Point RD {.x = pos.x + obj_sz.w, .y = pos.y};
+        Point LU {.x = pos.x, .y = pos.y + obj_sz.h - 1};
+        Point RU {.x = pos.x + obj_sz.w - 1, .y = pos.y + obj_sz.h - 1};
+        Point RD {.x = pos.x + obj_sz.w - 1, .y = pos.y};
 
         switch (stay_type) {
         case GameMap::E_CanStayType::Right:
@@ -77,13 +77,15 @@ public:
         }
     }
 
-    bool CanPointStay(Point pos, bool empty_can)
+    bool CanPointStay(Point pos, bool empty_can) const
     {
         auto t_type = now_room->gri.TileType(pos.x / TILE_SZ, pos.y / TILE_SZ);
         if (t_type == GameMap::E_TileType::Wall)return false;
         if (!empty_can && t_type == GameMap::E_TileType::Empty)return false;
         return true;
     }
+
+    GameMap::E_TileType PointType(Point pos) const { return now_room->gri.TileType(pos.x / TILE_SZ, pos.y / TILE_SZ); }
 
     Point GetPos(E_MapPos map_pos, Size obj_sz);
 

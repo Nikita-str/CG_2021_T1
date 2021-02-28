@@ -51,6 +51,7 @@ void OnKeyboardPressed(GLFWwindow* window, int key, int scancode, int action, in
 
 void processPlayerMovement(Player &player)
 {
+
 	bool X = Input.keys[GLFW_KEY_X];
 	if (X)player.Attack();
 
@@ -58,7 +59,8 @@ void processPlayerMovement(Player &player)
 	bool D = Input.keys[GLFW_KEY_S];
 	bool L = Input.keys[GLFW_KEY_A];
 	bool R = Input.keys[GLFW_KEY_D];
-	player.RefreshMoveState(U, D, L, R);
+	bool l_ctrl = Input.keys[GLFW_KEY_LEFT_CONTROL];
+	player.RefreshMoveState(U, D, L, R, l_ctrl);
 }
 
 void OnMouseButtonClicked(GLFWwindow* window, int button, int action, int mods)
@@ -190,6 +192,12 @@ int main(int argc, char** argv)
 
 	  processPlayerMovement(player);
 	  player.Draw(screenBuffer);
+
+	  /*TODO:DEL +++*/
+	  //auto pos = player.GetPos();
+	  //screenBuffer.SetPixel(pos.x + 12, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});
+	  //screenBuffer.SetPixel(pos.x + 19, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});
+	  /*TODO:DEL ---*/
 
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_CHECK_ERRORS;
 	  glDrawPixels(WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer.Data()); GL_CHECK_ERRORS;

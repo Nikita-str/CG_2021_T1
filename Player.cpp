@@ -12,14 +12,14 @@ void Player::Attack()
 
 bool Player::Moved() { return !now_attack && position.Moved(); }
 
-void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y)
+void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y, bool ctrl)
 {
     if (now_attack) { position.UpdateLastTime(); return; }
 
     old_coords = coords;
 
     position.Move((x == E_X_Dir::Not) ? 0 : ((x == E_X_Dir::Right) ? 1 : -1),
-                  (y == E_Y_Dir::Not) ? 0 : ((y == E_Y_Dir::Up)    ? 1 : -1), move_speed);
+                  (y == E_Y_Dir::Not) ? 0 : ((y == E_Y_Dir::Up)    ? 1 : -1), (ctrl) ? move_speed_ctrl : move_speed);
 
     bool x_move = x != E_X_Dir::Not;
     bool y_move = y != E_Y_Dir::Not;
@@ -46,6 +46,7 @@ void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y)
 
     //TODO : if (NOT ATTACKED)
     spr.SetState(Moved() ? E_LiveObjState::Walk : E_LiveObjState::Idle);
+    CheckStayOnEmpty(coords);
     //printf(Moved() ? "move\n" : "not move\n");
 }
 

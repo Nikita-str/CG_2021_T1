@@ -14,7 +14,9 @@ public:
 
     explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) 
     {
-        position.SetSize(Size {.w = 29, .h = 29}); player_getter = this;
+        position.SetSize(Size {.w = 29, .h = 29});
+        position.SetCanStay(true);
+        player_getter = this;
     };
 
     void Attack();
@@ -22,15 +24,26 @@ public:
     bool Moved();
     void Draw(Image &screen);
 
-    inline void RefreshMoveState(bool up, bool down, bool left, bool right)
+    inline void RefreshMoveState(bool up, bool down, bool left, bool right, bool ctrl)
     {
         RefreshMoveState((left == right) ? E_X_Dir::Not : (left ? E_X_Dir::Left : E_X_Dir::Right),
-                         (up == down) ? E_Y_Dir::Not : (up ? E_Y_Dir::Up : E_Y_Dir::Down));
+                         (up == down) ? E_Y_Dir::Not : (up ? E_Y_Dir::Up : E_Y_Dir::Down), ctrl);
     }
-    void RefreshMoveState(E_X_Dir x, E_Y_Dir y);
+    void RefreshMoveState(E_X_Dir x, E_Y_Dir y, bool ctrl);
 
     void KeyInc() { keys++; }
     void KeyDec() { keys--; }
+
+    void CheckStayOnEmpty(Point cur_pos)
+    {
+        auto empty = GameMap::E_TileType::Empty;
+        if ((GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 12, .y = cur_pos.y + 1}) == empty) &&
+            (GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 19, .y = cur_pos.y + 1}) == empty)) {
+            std::cout << "you stay on empty" << std::endl;
+        }
+    }
+
+    Point GetPos()const { return coords; }
 private:
     E_Dir back_dir = E_Dir::DOWN;
 
@@ -40,6 +53,7 @@ private:
 
     Pixel color {.r = 255, .g = 255, .b = 0, .a = 255};
     int move_speed = 100;
+    int move_speed_ctrl = 40;
 
     LiveObjSprite &spr;
 

@@ -10,11 +10,10 @@ struct Movement
     Movement(Point pos) : Movement(pos.x, pos.y) { }
     
     void SetSize(Size obj_sz) { obj_size = obj_sz; }
+    void SetCanStay(bool on_empty) { can_stay_on_empty = on_empty; }
 
     void UpdateLastTime() { last_time = GameTime::Now().GetTime(); }
 
-    int saved_dx = 0;
-    int saved_dy = 0;
     void Move(int dx, int dy, int speed)
     {
         double now_t = GameTime::Now().GetTime();
@@ -36,7 +35,7 @@ struct Movement
                     for (; (dx > 0) ? (x_temp > x_back) : (x_temp < x_back); x_temp += (dx > 0) ? -1 : 1) {
                         bool can_stay = GameMap::GetCur()->CanStay(
                             (dx > 0) ? GameMap::E_CanStayType::Right : GameMap::E_CanStayType::Left,
-                            Point {.x = (int)x_temp, .y = (int)y}, obj_size, true
+                            Point {.x = (int)x_temp, .y = (int)y}, obj_size, can_stay_on_empty
                         );
                         if (can_stay) {
                             move_x = true;
@@ -55,7 +54,7 @@ struct Movement
                     for (; (dy > 0) ? (y_temp > y_back) : (y_temp < y_back); y_temp += (dy > 0) ? -1 : 1) {
                         bool can_stay = GameMap::GetCur()->CanStay(
                             (dy > 0) ? GameMap::E_CanStayType::Up : GameMap::E_CanStayType::Down,
-                            Point {.x = (int)x, .y = (int)y_temp}, obj_size, true
+                            Point {.x = (int)x, .y = (int)y_temp}, obj_size, can_stay_on_empty
                         );
                         if (can_stay) {
                             move_y = true;
@@ -91,6 +90,7 @@ private:
     float x;
     float y;
 
+    bool can_stay_on_empty = false;
     Size obj_size {0, 0};
 
     double last_moved_time = 0;
