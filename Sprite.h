@@ -25,6 +25,8 @@ struct Sprite
 
     int Width()const { return imgs[frame_now].Width(); }
     int Height()const { return imgs[frame_now].Height(); }
+
+    const Image &GetFrame(int frame) const { return imgs.at(frame); }
 private:
     void SpriteFromImg(Image &img, int p_frames, int ms_on_frame = 125, int scale = 1);
 

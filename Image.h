@@ -65,11 +65,11 @@ struct Image
   Image(const Image &copy);
   Image(Image && a) noexcept;
 
-  Image &operator=(const Image &other)
+  /*Image &operator=(const Image &other)
   {
       error("oh no...");
       return *this;
-  }
+  }*/
 
   Image &operator=(Image &&other) noexcept
   {
@@ -101,8 +101,10 @@ struct Image
   inline void  SetPixel(int x, int y, const Pixel &pix) { data[width * y + x] = pix; }
 
   void Draw(Image &canvas, Point p, bool flip_OX = false, bool flip_OY = false, bool not_mix = false) const;
-
+   
   void FastDraw(Image &canvas, int lines, int from_line = 0) const;
+
+  void Draw(Image &canvas, std::function<Pixel(Pixel)> PixFunc) const;
 
   /// <summary>chnage image : image[x,y] = PixFunc(image[x,y])</summary>
   /// <param name="with_save_pixel">if we know that dif color on that image few then we can hash PixFunc result value</param>

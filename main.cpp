@@ -122,6 +122,32 @@ int initGL()
 	return 0;
 }
 
+Pixel lin_interp(Pixel from, Pixel to, double proc)
+{
+	uint8_t r = (uint8_t)(from.r + (to.r - from.r) * proc);
+	uint8_t g = (uint8_t)(from.g + (to.g - from.g) * proc);
+	uint8_t b = (uint8_t)(from.b + (to.b - from.b) * proc);
+	uint8_t a = 255;// (uint8_t)(from.a + (to.a - from.a) * proc);
+	return Pixel {r,g,b,a};
+}
+
+void Image_Draw_SpeedUp_Die(Image& screen_save, Image &canvas, double proc) 
+{
+	int c_w = screen_save.Width();
+	int c_h = screen_save.Height();
+
+	#pragma omp parallel for
+	for (int y = 0; y < c_h; y++)
+		for (int x = 0; x < c_w; x++) {
+			auto from = screen_save.GetPixel(x, y);
+			uint8_t r = (uint8_t)(from.r + (127 - from.r) * proc);
+			uint8_t g = (uint8_t)(from.g + (20 - from.g) * proc);
+			uint8_t b = (uint8_t)(from.b + (27 - from.b) * proc);
+			uint8_t a = 255;
+			canvas.SetPixel(x, y, Pixel {r,g,b,a});
+		}
+}
+
 int main(int argc, char** argv)
 {
 	if (!glfwInit())return -1;
@@ -176,22 +202,51 @@ int main(int argc, char** argv)
   double sec = GameTime::Now().GetTime();
   int frames = 0;
 
+  bool is_alive = true;
+  Image for_die = Image::Image(0, 0, 0);
+
+  double die_time = 0;
+  double die_duration = 3;
+
   while (!glfwWindowShouldClose(window)) {
 	  GameTime::Now().SetCur(glfwGetTime());
 
 	  if (GameTime::Now().GetTime() - sec > 1) {
 		  sec = GameTime::Now().GetTime();
-		  std::cout <<"fps : " << frames << std::endl;
+		  std::cout << "fps : " << frames << std::endl;
 		  frames = 0;
 	  }
 	  frames++;
-
+		  
 	  glfwPollEvents();
 
-	  gmap.Draw(screenBuffer); 
 
-	  processPlayerMovement(player);
-	  player.Draw(screenBuffer);
+	  if (is_alive) {
+
+		  gmap.Draw(screenBuffer);
+
+		  processPlayerMovement(player);
+		  is_alive = !player.GetIsDied();
+
+		  if (!is_alive) { // die
+			  for_die = Image {screenBuffer};
+			  die_time = GameTime::Now().GetTime();
+		  }
+		  else player.Draw(screenBuffer);
+	  } 
+	  if(!is_alive) {
+		  double proc = GameTime::Now().GetSecAfter(die_time) / die_duration;
+		  if (proc > 1) {
+			  for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {100, 20, 27, 255}, 1); });
+			  player.DieDraw(screenBuffer, 1);
+			  break;
+		  }
+		  for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {100, 20, 27, 255}, proc); });
+		  //Image_Draw_SpeedUp_Die(for_die, screenBuffer, proc);
+
+		  player.DieDraw(screenBuffer, proc);
+		  //
+	  }
 
 	  /*TODO:DEL +++*/
 	  //auto pos = player.GetPos();

@@ -63,6 +63,9 @@ struct LiveObjSprite
         cur_spr->Draw(canvas, p, flip_OX, flip_OY);
     }
 
+    const Image& GetImage(E_LiveObjState state, E_Dir dir, int frame) const {return spr_states.find(state)->second.find(dir)->second.GetFrame(frame);}
+    const Image& GetImage(E_LiveObjState state, int frame) const {return spr_states.find(state)->second.find(cur_dir)->second.GetFrame(frame);}
+
 private:
     void SpritePrepare()
     {

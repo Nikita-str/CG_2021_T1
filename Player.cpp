@@ -50,11 +50,20 @@ void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y, bool ctrl)
     //printf(Moved() ? "move\n" : "not move\n");
 }
 
+void Player::DieDraw(Image &canvas, double proc)
+{
+    if (!died)return;
+    SetPosY(-30 + -50 + (50 + die_pos.y) * (1 - proc));
+    spr.GetImage(E_LiveObjState::Idle, 0).Draw(canvas, coords, false);
+}
+
 void Player::Draw(Image &screen)
 {
+    if (died)return;
     if (now_attack && GameTime::Now().TimeCome(blocked_to_time)) {
         now_attack = false;
         spr.SetState(E_LiveObjState::Idle);
     }
     spr.Draw(screen, coords, true);
+    
 }

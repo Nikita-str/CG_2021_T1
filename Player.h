@@ -23,6 +23,7 @@ public:
 
     bool Moved();
     void Draw(Image &screen);
+    void DieDraw(Image &canvas, double proc);
 
     inline void RefreshMoveState(bool up, bool down, bool left, bool right, bool ctrl)
     {
@@ -39,11 +40,15 @@ public:
         auto empty = GameMap::E_TileType::Empty;
         if ((GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 12, .y = cur_pos.y + 1}) == empty) &&
             (GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 19, .y = cur_pos.y + 1}) == empty)) {
-            std::cout << "you stay on empty" << std::endl;
+            die_pos = coords;
+            died = true;
         }
     }
 
     Point GetPos()const { return coords; }
+    bool GetIsDied()const { return died; }
+
+    void SetPosY(int y) { coords.y = y; }
 private:
     E_Dir back_dir = E_Dir::DOWN;
 
@@ -61,6 +66,9 @@ private:
     double blocked_to_time = -0.0;
 
     int keys = 0;
+
+    bool died = false;
+    Point die_pos;
 };
 
 #endif //MAIN_PLAYER_H
