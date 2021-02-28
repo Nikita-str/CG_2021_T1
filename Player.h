@@ -38,8 +38,9 @@ public:
     }
     void RefreshMoveState(E_X_Dir x, E_Y_Dir y, bool ctrl);
 
-    void KeyInc() { keys++; }
-    void KeyDec() { keys--; }
+    void KeyInc() { invent.keys++; }
+    void KeyDec() { invent.keys--; }
+    bool CanTakeKey() { return invent.keys < 3; }
 
     void CheckStayOnEmpty(Point cur_pos)
     {
@@ -60,7 +61,42 @@ public:
     E_DieType GetDiedType()const { return die_type; }
 
     void SetPosY(int y) { coords.y = y; }
+
+    void InventoryDraw(Image &canvas) { invent.Draw(canvas); }
 private:
+
+    struct Inventory
+    {
+        int keys = 0;
+        Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), micro_inv("../resources/micro_inv.png"), key("../resources/key.png"), key_black(0,0,0)
+        {
+            for (int i = 0; i < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; i++) {
+                micro_inv.Draw(micro_inv_canvas, {i * TILE_SZ, 0}, true);
+            }
+
+            key_black = Image::Image(key);
+            key_black.PixelsChange([](auto x) { return (x.a == 255) ? Pixel {52,52,52,255} : x; }, false);
+        }
+
+        void Draw(Image &canvas)
+        {
+            micro_inv_canvas.FastDraw(canvas, TILE_SZ, W_HEIGHT - TILE_SZ);
+            for (int i = 0; i < 3; i++) {
+                int p_draw = 10 + 40 * i;
+                const Image &k_draw = (i < keys) ? key : key_black;
+                k_draw.Draw(canvas, Point {p_draw, Y + 5}, true);
+            }
+        }
+
+    private:
+        Image micro_inv_canvas;
+        Image micro_inv;
+        Image key_black;
+        Image key;
+
+        static constexpr int Y = W_HEIGHT - TILE_SZ;
+    }invent;
+
     E_Dir back_dir = E_Dir::DOWN;
 
     Movement position;
@@ -76,11 +112,11 @@ private:
     bool now_attack = false;
     double blocked_to_time = -0.0;
 
-    int keys = 0;
-
     bool died = false;
     Point die_pos;
     E_DieType die_type;
+
+    double hp = 40;
 
 };
 

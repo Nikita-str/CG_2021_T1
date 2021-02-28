@@ -4,13 +4,15 @@
 #include "Sprite.h"
 
 typedef std::function<void(bool)> item_action; // bool : true => player take it;  false => player throw it;
+typedef std::function<bool(void)> item_can_take;
 
 struct Item
 {
     Point pos;
     Sprite spr;
     item_action ia;
-    Item(Point _pos, Sprite _spr, item_action _ia) : spr(_spr), pos(_pos), ia(_ia) {}
+    item_can_take ict;
+    Item(Point _pos, Sprite _spr, item_can_take _ict, item_action _ia) : spr(_spr), pos(_pos), ia(_ia), ict(_ict) {}
 
     void empty_ia(bool on) {}
 

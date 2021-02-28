@@ -17,11 +17,14 @@ struct MapObj
     MapObj(GameMap &_parent) : items(), parent(_parent) {};
     //void AddItem(Point pos, int rarity);
     void AddKey(Point pos);
+    
+    void PressE();
 
     void DrawItems(Image &canvas);
 private:
     std::vector<Item> items {};
     GameMap &parent;
+    int ind_E = -1;
 };
 
 
@@ -104,6 +107,8 @@ public:
         img_for_draw.Draw(canvas, {.x = map_x * TILE_SZ + (TILE_SZ - img_for_draw.Width()) / 2, .y = map_y * TILE_SZ + (TILE_SZ - img_for_draw.Height()) / 2}, true);
     }
 
+    void PressE() { now_room->map_objects.PressE(); }
+
 private:
     void load_room(int x, int y);
 
@@ -144,7 +149,7 @@ private:
     RandImage floor_img;
     Image empty_img;
     Image wall_img;
-    Image key_E_img;
+    Sprite key_E_img;
 
     GameMap::GameRoom *now_room = nullptr;
     

@@ -55,6 +55,9 @@ void processPlayerMovement(Player &player)
 	bool X = Input.keys[GLFW_KEY_X];
 	if (X)player.Attack();
 
+	bool E = Input.keys[GLFW_KEY_E];
+	if (E)GameMap::GetCur()->PressE();
+
 	bool U = Input.keys[GLFW_KEY_W];
 	bool D = Input.keys[GLFW_KEY_S];
 	bool L = Input.keys[GLFW_KEY_A];
@@ -244,7 +247,10 @@ int main(int argc, char** argv)
 			  die_time = GameTime::Now().GetTime();
 			  die_type = player.GetDiedType();
 		  }
-		  else player.Draw(screenBuffer);
+		  else {
+			  player.Draw(screenBuffer);
+			  player.InventoryDraw(screenBuffer);
+		  }
 	  } 
 	  if(!is_alive) {
 		  double proc = GameTime::Now().GetSecAfter(die_time) / die_duration;

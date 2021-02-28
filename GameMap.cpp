@@ -6,7 +6,7 @@ GameMap *GameMap::cur_map;
 const std::string MAP_PATH {"../maps/"};
 
 GameMap::GameMap() : floor_img("../resources/floor", 6), empty_img("../resources/empty.png"), 
-                     wall_img("../resources/wall.png"), key_E_img("../resources/E.png")
+                     wall_img("../resources/wall.png"), key_E_img("../resources/E.png", 2, 400)
 {
     cur_map = this;
 
