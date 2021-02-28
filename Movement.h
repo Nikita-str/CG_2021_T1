@@ -25,7 +25,59 @@ struct Movement
                 x += dt * dx * speed;
                 y += dt * dy * speed;
                 last_moved_time = now_t;
+                moved = true;
             } else {
+
+                bool move_x = false;
+                if (dx) {
+                    double x_back = x;
+                    double x_temp = x + dt * dx * speed;
+
+                    for (; (dx > 0) ? (x_temp > x_back) : (x_temp < x_back); x_temp += (dx > 0) ? -1 : 1) {
+                        bool can_stay = GameMap::GetCur()->CanStay(
+                            (dx > 0) ? GameMap::E_CanStayType::Right : GameMap::E_CanStayType::Left,
+                            Point {.x = (int)x_temp, .y = (int)y}, obj_size, true
+                        );
+                        if (can_stay) {
+                            move_x = true;
+                            break;
+                        }
+                    }
+
+                    if (move_x)x = x_temp;
+                }
+                
+                bool move_y = false;
+                if (dy) {
+                    double y_back = y;
+                    double y_temp = y + dt * dy * speed;
+
+                    for (; (dy > 0) ? (y_temp > y_back) : (y_temp < y_back); y_temp += (dy > 0) ? -1 : 1) {
+                        bool can_stay = GameMap::GetCur()->CanStay(
+                            (dy > 0) ? GameMap::E_CanStayType::Up : GameMap::E_CanStayType::Down,
+                            Point {.x = (int)x, .y = (int)y_temp}, obj_size, true
+                        );
+                        if (can_stay) {
+                            move_y = true;
+                            break;
+                        }
+                    }
+
+                    if (move_y)y = y_temp;
+                }
+                
+                if (move_x || move_y) {
+                    last_moved_time = now_t;
+                    moved = true;
+                }
+                //re realise by 
+                /*
+                save back x and y
+                x += dt * dx * speed;
+                y += dt * dy * speed;
+                check can be new x< if no : -1(+1) and check repeat while new != back
+                */
+                /*
                 Point back_pos = Point {.x = (int)x, .y = (int)y};
                 
                 #define A(cc)                                         \
@@ -35,7 +87,7 @@ struct Movement
 
                 A(x);
                 A(y); 
-
+                
                 #undef A
 
                 Point now_pos = Point {.x = (int)(x + i_add_x), .y = (int)(y + i_add_y)};
@@ -60,8 +112,9 @@ struct Movement
                 }
 
                 if(move_x || move_y)last_moved_time = now_t;
+                */
             }
-            moved = true;
+            //moved = true;
 
         }
 

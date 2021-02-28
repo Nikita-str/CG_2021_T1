@@ -43,11 +43,49 @@ public:
     {
         Floor,
         Wall,
-        Empty
+        Empty,
+        Nothing
+    };
+
+    enum class E_CanStayType
+    {
+        Right,
+        Left,
+        Up,
+        Down
     };
 
     GameMap();
 
+    bool CanStay(E_CanStayType stay_type, Point pos, Size obj_sz, bool empty_can)
+    {
+        Point LD {.x = pos.x, .y = pos.y};
+        Point LU {.x = pos.x, .y = pos.y + obj_sz.h};
+        Point RU {.x = pos.x + obj_sz.w, .y = pos.y + obj_sz.h};
+        Point RD {.x = pos.x + obj_sz.w, .y = pos.y};
+
+        switch (stay_type) {
+        case GameMap::E_CanStayType::Right:
+            return CanPointStay(RU, empty_can) && CanPointStay(RD, empty_can);
+        case GameMap::E_CanStayType::Left:
+            return CanPointStay(LD, empty_can) && CanPointStay(LU, empty_can);
+        case GameMap::E_CanStayType::Up:
+            return CanPointStay(LU, empty_can) && CanPointStay(RU, empty_can);
+        case GameMap::E_CanStayType::Down:
+            return CanPointStay(LD, empty_can) && CanPointStay(RD, empty_can);
+        default:break;
+        }
+    }
+
+    bool CanPointStay(Point pos, bool empty_can)
+    {
+        auto t_type = now_room->gri.TileType(pos.x / TILE_SZ, pos.y / TILE_SZ);
+        if (t_type == GameMap::E_TileType::Wall)return false;
+        if (!empty_can && t_type == GameMap::E_TileType::Empty)return false;
+        return true;
+    }
+
+    //TODO: del Move[X|Y]
     int MoveX(Point back_pos, int now_x, Size obj_sz)
     {
         if (back_pos.x == now_x)return now_x;
@@ -128,6 +166,8 @@ private:
 
         GameMap::E_TileType TileType(int x, int y) const
         {
+            if (x < 0 || map_width <= x)return GameMap::E_TileType::Nothing;
+            if (y < 0 || map_height <= y)return GameMap::E_TileType::Nothing;
             return tile_type[map_height - y - 1][x];
         }
     };
