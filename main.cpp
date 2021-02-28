@@ -131,6 +131,15 @@ Pixel lin_interp(Pixel from, Pixel to, double proc)
 	return Pixel {r,g,b,a};
 }
 
+Pixel only_r_color(Pixel from, double proc)
+{
+	uint8_t r = from.r;
+	uint8_t g = (uint8_t)(from.g * (1 - proc));
+	uint8_t b = (uint8_t)(from.b * (1 - proc));
+	uint8_t a = 255;// (uint8_t)(from.a + (to.a - from.a) * proc);
+	return Pixel {r,g,b,a};
+}
+
 void Image_Draw_SpeedUp_Die(Image& screen_save, Image &canvas, double proc) 
 {
 	int c_w = screen_save.Width();
@@ -207,6 +216,8 @@ int main(int argc, char** argv)
 
   double die_time = 0;
   double die_duration = 3;
+  Player::E_DieType die_type;
+  bool last_die_draw = false;
 
   while (!glfwWindowShouldClose(window)) {
 	  GameTime::Now().SetCur(glfwGetTime());
@@ -231,21 +242,24 @@ int main(int argc, char** argv)
 		  if (!is_alive) { // die
 			  for_die = Image {screenBuffer};
 			  die_time = GameTime::Now().GetTime();
+			  die_type = player.GetDiedType();
 		  }
 		  else player.Draw(screenBuffer);
 	  } 
 	  if(!is_alive) {
 		  double proc = GameTime::Now().GetSecAfter(die_time) / die_duration;
-		  if (proc > 1) {
-			  for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {100, 20, 27, 255}, 1); });
-			  player.DieDraw(screenBuffer, 1);
-			  break;
+		  if (proc >= 1) {
+			  if (last_die_draw) break;
+			  last_die_draw = true;
 		  }
-		  for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {100, 20, 27, 255}, proc); });
-		  //Image_Draw_SpeedUp_Die(for_die, screenBuffer, proc);
+
+		  if(die_type == Player::E_DieType::Kill)
+			  for_die.Draw(screenBuffer, [&](auto x) {return only_r_color(x, proc); });
+		  else if (die_type == Player::E_DieType::EmptyStay)
+			  for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {27, 20, 27, 255}, proc); });
+			  //Image_Draw_SpeedUp_Die(for_die, screenBuffer, proc);
 
 		  player.DieDraw(screenBuffer, proc);
-		  //
 	  }
 
 	  /*TODO:DEL +++*/

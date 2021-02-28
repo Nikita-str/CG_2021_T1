@@ -10,6 +10,12 @@ struct Player
     //explicit Player(Point pos = {.x = 10, .y = 10}) : coords(pos), old_coords(coords) {};
 private: static Player *player_getter;
 public:
+    enum class E_DieType
+    {
+        Kill,
+        EmptyStay,
+    };
+
     static Player &Get() { return *player_getter; }
 
     explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) 
@@ -42,11 +48,16 @@ public:
             (GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 19, .y = cur_pos.y + 1}) == empty)) {
             die_pos = coords;
             died = true;
+            die_type = E_DieType::EmptyStay;
         }
     }
 
+    E_Dir GetCurDir()const { return spr.GetCurDir(); }
+    Point GetCenter()const { return position.CenterPos(); }
+
     Point GetPos()const { return coords; }
     bool GetIsDied()const { return died; }
+    E_DieType GetDiedType()const { return die_type; }
 
     void SetPosY(int y) { coords.y = y; }
 private:
@@ -69,6 +80,8 @@ private:
 
     bool died = false;
     Point die_pos;
+    E_DieType die_type;
+
 };
 
 #endif //MAIN_PLAYER_H

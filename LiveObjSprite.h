@@ -57,6 +57,7 @@ struct LiveObjSprite
     }
 
     double GetCurAnimTime() const { return cur_spr->AnimTime(); }
+    E_Dir GetCurDir() const { return cur_dir; }
 
     void Draw(Image &canvas, const Point p, bool flip_OX = true, bool flip_OY = false)
     {

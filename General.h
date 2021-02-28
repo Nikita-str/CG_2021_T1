@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+static constexpr int TILE_SZ = 32;
+
 static constexpr int W_WIDTH = 1024;
 static constexpr int W_HEIGHT = 720;
 
@@ -17,6 +19,11 @@ inline bool operator< (const Point a, const Point b)
 {
     if (a.x != b.x)return a.x < b.x;
     return a.y < b.y;
+}
+
+inline bool operator== (const Point a, const Point b)
+{
+    return (a.x == b.x) && (a.y == b.y);
 }
 
 struct Size

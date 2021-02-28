@@ -25,7 +25,6 @@ private:
 };
 
 
-static constexpr int TILE_SZ = 32;
 
 
 struct GameMap
@@ -90,6 +89,10 @@ public:
     Point GetPos(E_MapPos map_pos, Size obj_sz);
 
     void Draw(Image &canvas);
+    void Draw_E(Image &canvas, Point p)
+    {
+        key_E_img.Draw(canvas, {.x = p.x * TILE_SZ + (TILE_SZ - key_E_img.Width()) / 2, .y = (p.y + 1) * TILE_SZ}, true);
+    }
 
     int PixWidth()const { return now_room->gri.map_width * TILE_SZ; }
     int PixHeight()const { return now_room->gri.map_height * TILE_SZ; }
@@ -141,6 +144,7 @@ private:
     RandImage floor_img;
     Image empty_img;
     Image wall_img;
+    Image key_E_img;
 
     GameMap::GameRoom *now_room = nullptr;
     

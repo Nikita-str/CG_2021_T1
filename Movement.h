@@ -77,7 +77,8 @@ struct Movement
         last_time = now_t;
     }
 
-    Point Pos() { return {(int)x, (int)y}; }
+    Point Pos() const { return {(int)x, (int)y}; }
+    Point CenterPos() const { return {(int)(x + obj_size.w/2), (int)(y + obj_size.h/2)}; }
 
     bool Moved() 
     { 

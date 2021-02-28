@@ -53,8 +53,11 @@ void Player::RefreshMoveState(E_X_Dir x, E_Y_Dir y, bool ctrl)
 void Player::DieDraw(Image &canvas, double proc)
 {
     if (!died)return;
-    SetPosY(-30 + -50 + (50 + die_pos.y) * (1 - proc));
-    spr.GetImage(E_LiveObjState::Idle, 0).Draw(canvas, coords, false);
+    if (die_type == E_DieType::EmptyStay) {
+        SetPosY(-30 + -50 + (50 + die_pos.y) * (1 - proc));
+        spr.GetImage(E_LiveObjState::Idle, 0).Draw(canvas, coords, false);
+    }
+    //for kill draw grave
 }
 
 void Player::Draw(Image &screen)
