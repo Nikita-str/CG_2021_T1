@@ -5,6 +5,7 @@
 
 typedef std::function<void(bool)> item_action; // bool : true => player take it;  false => player throw it;
 typedef std::function<bool(void)> item_can_take;
+typedef std::function<void(void)> item_use;
 
 enum class E_ItemTypes
 {
@@ -25,6 +26,8 @@ struct Item
     Sprite spr;
     item_action ia;
     item_can_take ict;
+    item_use use;
+    bool can_be_used = false;
     bool inventory = false;
     Item() {}
     //Item(Item && itm) : item_type(itm.item_type), item_lvl(itm.item_lvl), pos(itm.pos), spr(itm.spr), ia(itm.ia), ict(itm.ict), inventory(itm.inventory){}

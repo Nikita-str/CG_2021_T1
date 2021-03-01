@@ -37,6 +37,15 @@ Point GameMap::GetPos(E_MapPos map_pos, Size obj_sz)
 }
 
 
+bool GameMap::CanThrowItem(Point pos)
+{
+    auto & v = GetItems();
+    pos = {pos.x / TILE_SZ, pos.y / TILE_SZ};
+    for (int i = 0; i < v.size(); i++)if (v[i].pos == pos)return false;
+    return E_TileType::Floor == now_room->gri.TileType(pos.x, pos.y);
+}
+
+
 void GameMap::load_room(int x, int y)
 {
     char key = room_map[y][x];

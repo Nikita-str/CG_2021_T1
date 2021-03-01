@@ -51,18 +51,39 @@ void OnKeyboardPressed(GLFWwindow* window, int key, int scancode, int action, in
 
 void processPlayerMovement(Player &player)
 {
-	static bool E_down = false;
-	static bool I_down = false;
 	bool X = Input.keys[GLFW_KEY_X];
 	if (X)player.Attack();
-
+	
+	static bool E_down = false;
 	bool E = Input.keys[GLFW_KEY_E];
 	if (E && !E_down)GameMap::GetCur()->PressE();
 	E_down = E;
 
+	static bool I_down = false;
 	bool I = Input.keys[GLFW_KEY_I];
 	if (I && !I_down)Player::Get().PressI();
 	I_down = I;
+
+	static bool LA_down = false;
+	bool L_ANG = Input.keys[GLFW_KEY_COMMA];
+	if (L_ANG && !LA_down)Player::Get().PressLA();
+	LA_down = L_ANG;
+
+	static bool RA_down = false;
+	bool R_ANG = Input.keys[GLFW_KEY_PERIOD];
+	if (R_ANG && !RA_down)Player::Get().PressRA();
+	RA_down = R_ANG; 
+
+	static bool USE_down = false;
+	bool USE = Input.keys[GLFW_KEY_U];
+	if (USE && !USE_down)Player::Get().PressU();
+	USE_down = USE;
+
+	//thrOw
+	static bool O_down = false; 
+	bool O = Input.keys[GLFW_KEY_O];
+	if (O && !O_down)Player::Get().PressO();
+	O_down = O;
 
 	bool U = Input.keys[GLFW_KEY_W];
 	bool D = Input.keys[GLFW_KEY_S];

@@ -113,6 +113,8 @@ public:
 
     std::vector<Item> &GetItems() { return now_room->map_objects.GetItems(); }
 
+    bool CanThrowItem(Point pos);
+
 private:
     void load_room(int x, int y);
 

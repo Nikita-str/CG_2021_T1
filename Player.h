@@ -78,13 +78,20 @@ public:
     void InventoryDraw(Image &canvas) { invent.Draw(canvas); }
 
     void AddSpeed(int add) { move_speed += add; }
+    void HpRestore(int add) { std::cout<<"hp hil " << add << std::endl; }
 
-    void PressI() { invent.open = !invent.open; }
+    void PressI() { invent.open = !invent.open; invent.inv_pos = -1; }
+    void PressLA() { invent.inv_pos = (invent.inv_pos == -1) ? invent.inv_size - 1 : (invent.inv_pos - 1 + invent.inv_size) % invent.inv_size; }
+    void PressRA() { invent.inv_pos = (invent.inv_pos + 1) % invent.inv_size; }
+    void PressU() { invent.Use(); }
+    void PressO() { invent.Throw(position.CenterPos()); }
 private:
 
     struct Inventory
     {
         bool open = false;
+
+        int inv_pos = -1;
 
         std::vector<Item> inv_item;
         int boots_lvl = 0;
@@ -93,7 +100,8 @@ private:
         int inv_size = 3;
         Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), inv_cell_canvas(W_WIDTH, TILE_SZ, 4), 
                       micro_inv("../resources/micro_inv.png"), key("../resources/key.png"), 
-                      inv_cell("../resources/inv_cell.png"), inv_bg("../resources/inv_bg.png")
+                      inv_cell("../resources/inv_cell.png"), inv_bg("../resources/inv_bg.png"),
+                      inv_cell_active("../resources/inv_cell_now.png")
         {
             for (int i = 0; i < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; i++) {
                 micro_inv.Draw(micro_inv_canvas, {i * TILE_SZ, 0}, true);
@@ -117,10 +125,33 @@ private:
             key_black.PixelsChange(shadow_func, false);
         }
 
+        void Use()
+        {
+            if (inv_pos < 0)return;
+            if (inv_item.size() <= inv_pos)return;
+            if (!inv_item[inv_pos].can_be_used)return;
+            inv_item[inv_pos].use();
+            inv_item.erase(inv_item.begin() + inv_pos);
+            inv_pos = -1;
+        }
+
+        void Throw(Point pos)
+        {
+            if (inv_pos < 0)return;
+            if (inv_item.size() <= inv_pos)return;
+            if (!GameMap::GetCur()->CanThrowItem(pos))return;
+            auto &itm = inv_item[inv_pos];
+            itm.pos = Point {pos.x / TILE_SZ, pos.y / TILE_SZ};
+            GameMap::GetCur()->GetItems().push_back(std::move(itm));
+            inv_item.erase(inv_item.begin() + inv_pos);
+            inv_pos = -1;
+        }
+
         void Draw(Image &canvas)
         {
             if (open) {
                 inv_cell_canvas.FastDraw(canvas, TILE_SZ, W_HEIGHT - TILE_SZ);
+                if (inv_pos != -1)inv_cell_active.Draw(canvas, {inv_pos * TILE_SZ + 4, Y + 4}, true);
                 for (int i = 0; i < inv_item.size(); i++) {
                     auto &spr = inv_item[i].spr;
                     spr.Draw(canvas, Point {i * TILE_SZ + (TILE_SZ - spr.Width()) / 2, Y + (TILE_SZ - spr.Height()) / 2}, true); 
@@ -144,6 +175,7 @@ private:
         Image inv_cell_canvas;
         Image micro_inv;
         Image inv_cell;
+        Image inv_cell_active;
         Image inv_bg;
         Image key_black;
         Image key;
