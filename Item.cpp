@@ -79,7 +79,7 @@ void Item::CreateHelper()
         inventory = true;
         can_be_used = true;
         spr = Sprite {"../resources/hp_pot_" + std::to_string(item_lvl) + ".png", (item_lvl == 1) ? 7 : 11};
-        ict = []() { return true; };
+        ict = IsPlaceForItem;
         ia = [item_lvl = item_lvl, pos = pos](bool on) {};
         use = [power = item_lvl]() { Player::Get().HpRestore(4 + power * 8); };
         break;
