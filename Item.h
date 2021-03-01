@@ -6,13 +6,31 @@
 typedef std::function<void(bool)> item_action; // bool : true => player take it;  false => player throw it;
 typedef std::function<bool(void)> item_can_take;
 
+enum class E_ItemTypes
+{
+    Nothing,
+    Key,
+    Boots,
+    Ring,
+    Potion,
+    Book,
+    Other
+};
+
 struct Item
 {
-    Point pos;
+    E_ItemTypes item_type = E_ItemTypes::Nothing;
+    int item_lvl = -2;
+    Point pos = Point{0, 0};
     Sprite spr;
     item_action ia;
     item_can_take ict;
-    Item(Point _pos, Sprite _spr, item_can_take _ict, item_action _ia) : spr(_spr), pos(_pos), ia(_ia), ict(_ict) {}
+    bool inventory = false;
+    Item() {}
+    //Item(Item && itm) : item_type(itm.item_type), item_lvl(itm.item_lvl), pos(itm.pos), spr(itm.spr), ia(itm.ia), ict(itm.ict), inventory(itm.inventory){}
+    //Item(E_ItemTypes i_type, Point _pos, Sprite _spr, item_can_take _ict, item_action _ia) : item_type(i_type), spr(_spr), pos(_pos), ia(_ia), ict(_ict) {}
+    Item(E_ItemTypes i_type, int i_lvl, Point _pos);
+    Item(int i_lvl, Point _pos);
 
     void empty_ia(bool on) {}
 
@@ -40,6 +58,8 @@ struct Item
         if (p.y > p_y && p.y > p_y + h)return false;
         return true;
     }
+private:
+    void CreateHelper();
 };
 
 #endif

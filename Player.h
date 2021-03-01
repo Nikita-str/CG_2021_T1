@@ -40,7 +40,20 @@ public:
 
     void KeyInc() { invent.keys++; }
     void KeyDec() { invent.keys--; }
-    bool CanTakeKey() { return invent.keys < 3; }
+    bool CanTakeKey() const { return invent.keys < 3; }
+
+    bool IsPlaceForItem() const { return invent.inv_item.size() < invent.inv_size; }
+    std::vector<Item> &GetInv() { return invent.inv_item; }
+
+    int BootsLvl() const { 
+        return invent.boots_lvl; 
+    }
+
+    void TakeBoots(int lvl)
+    {
+        move_speed += lvl * 40 - invent.boots_lvl * 40;
+        invent.boots_lvl = lvl;
+    }
 
     void CheckStayOnEmpty(Point cur_pos)
     {
@@ -63,29 +76,52 @@ public:
     void SetPosY(int y) { coords.y = y; }
 
     void InventoryDraw(Image &canvas) { invent.Draw(canvas); }
+
+    void AddSpeed(int add) { 
+    move_speed += add; 
+    std::cout << "player speed = " << move_speed << std::endl;
+    }
 private:
 
     struct Inventory
     {
+        std::vector<Item> inv_item;
+        int boots_lvl = 0;
+        int armor_lvl = 0;
         int keys = 0;
-        Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), micro_inv("../resources/micro_inv.png"), key("../resources/key.png"), key_black(0,0,0)
+        int inv_size = 3;
+        Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), micro_inv("../resources/micro_inv.png"), key("../resources/key.png")
         {
             for (int i = 0; i < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; i++) {
                 micro_inv.Draw(micro_inv_canvas, {i * TILE_SZ, 0}, true);
             }
 
+            auto shadow_func = [](auto x) { return (x.a == 255) ? Pixel {52,52,52,255} : x; };
+
+            //boots +++
+            Image boots_shadow {"../resources/boots_3.png"};
+            boots_shadow.PixelsChange(shadow_func, false);
+            boots_imgs.push_back(boots_shadow);
+            for (int i = 0; i < 3; i++)boots_imgs.emplace_back("../resources/boots_" + std::to_string(i + 1) + ".png");
+            //boots ---
+
             key_black = Image::Image(key);
-            key_black.PixelsChange([](auto x) { return (x.a == 255) ? Pixel {52,52,52,255} : x; }, false);
+            key_black.PixelsChange(shadow_func, false);
         }
 
         void Draw(Image &canvas)
         {
             micro_inv_canvas.FastDraw(canvas, TILE_SZ, W_HEIGHT - TILE_SZ);
+            int now_x_pos = 0;
+            int now_y_pos = Y + 5;
+
             for (int i = 0; i < 3; i++) {
                 int p_draw = 10 + 40 * i;
                 const Image &k_draw = (i < keys) ? key : key_black;
-                k_draw.Draw(canvas, Point {p_draw, Y + 5}, true);
+                k_draw.Draw(canvas, Point {p_draw, now_y_pos}, true);
+                now_x_pos = p_draw + 50;
             }
+            boots_imgs[boots_lvl].Draw(canvas, Point {now_x_pos, now_y_pos + 3}, true);
         }
 
     private:
@@ -93,6 +129,7 @@ private:
         Image micro_inv;
         Image key_black;
         Image key;
+        std::vector<Image> boots_imgs;
 
         static constexpr int Y = W_HEIGHT - TILE_SZ;
     }invent;
@@ -120,4 +157,5 @@ private:
 
 };
 
-#endif //MAIN_PLAYER_H
+#endif 
+//MAIN_PLAYER_H

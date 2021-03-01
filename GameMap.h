@@ -17,10 +17,12 @@ struct MapObj
     MapObj(GameMap &_parent) : items(), parent(_parent) {};
     //void AddItem(Point pos, int rarity);
     void AddKey(Point pos);
+    void AddItem(Point pos, int lvl);
     
     void PressE();
 
     void DrawItems(Image &canvas);
+    std::vector<Item> &GetItems() { return items; }
 private:
     std::vector<Item> items {};
     GameMap &parent;
@@ -108,6 +110,8 @@ public:
     }
 
     void PressE() { now_room->map_objects.PressE(); }
+
+    std::vector<Item> &GetItems() { return now_room->map_objects.GetItems(); }
 
 private:
     void load_room(int x, int y);

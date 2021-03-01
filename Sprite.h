@@ -14,6 +14,7 @@ struct SpritePixSz
 
 struct Sprite
 {
+    Sprite() {};
     Sprite(const std::string &path, int p_frames, int ms_on_frame = 125, int scale = 1);
     Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame = 125, int scale = 1);
 
@@ -23,8 +24,8 @@ struct Sprite
 
     double AnimTime() const { return s_per_frame * frames; }
 
-    int Width()const { return imgs[frame_now].Width(); }
-    int Height()const { return imgs[frame_now].Height(); }
+    int Width()const { return frames == 0 ? frames : imgs[frame_now].Width(); }
+    int Height()const { return frames == 0 ? frames : imgs[frame_now].Height(); }
 
     const Image &GetFrame(int frame) const { return imgs.at(frame); }
 private:

@@ -51,6 +51,8 @@ enum class E_ImgRotation { Rot_90 };
 
 struct Image
 {
+  Image() {};
+
   explicit Image(const std::string &a_path);
   Image(const std::string &a_path, int scale);
   Image(const std::string &a_path, int scale_x, int scale_y);

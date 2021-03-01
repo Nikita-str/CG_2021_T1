@@ -98,6 +98,7 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
             parent.empty_img.Draw(room_holst, {x * TILE_SZ, y * TILE_SZ});
 
     for (int i = 0; i < gri.keys_pos.size(); i++)map_objects.AddKey(gri.keys_pos[i]);
+    for (int i = 0; i < gri.items.size(); i++)map_objects.AddItem(gri.items[i].first, gri.items[i].second);
 
 }
 
@@ -206,4 +207,5 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     file.close();
 
     for (int i = 0; i < keys_pos.size(); i++)keys_pos[i].y = map_height - 1 - keys_pos[i].y;
+    for (int i = 0; i < items.size(); i++)items[i].first.y = map_height - 1 - items[i].first.y;
 }

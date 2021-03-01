@@ -1,12 +1,11 @@
 #include "GameMap.h"
 #include "Player.h"
 
-void MapObj::AddKey(Point pos)
-{
-    items.emplace_back(pos, Sprite("../resources/key.png", 1),
-        []() { return Player::Get().CanTakeKey(); },
-        [](bool on) {if (on)Player::Get().KeyInc(); else Player::Get().KeyDec(); });
-}
+#include <iterator>
+#include <utility>
+
+void MapObj::AddKey(Point pos){items.emplace_back(E_ItemTypes::Key, -1, pos);}
+void MapObj::AddItem(Point pos, int lvl){items.emplace_back(lvl, pos);}
 
 void MapObj::DrawItems(Image &canvas)
 {
@@ -48,5 +47,12 @@ void MapObj::PressE()
     auto &itm = items[ind_E];
     if (!itm.ict())return;
     itm.ia(true);
-    items.erase(items.begin() + ind_E);
+    if (itm.inventory) {
+        auto &inv = Player::Get().GetInv();
+        //inv.insert(inv.end(), std::make_move_iterator(items.begin() + ind_E), std::make_move_iterator(items.begin() + ind_E + 1));
+        inv.push_back(std::move(itm));
+        items.erase(items.begin() + ind_E);
+    } else {
+        items.erase(items.begin() + ind_E);
+    }
 }

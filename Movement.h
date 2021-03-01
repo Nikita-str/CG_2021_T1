@@ -88,8 +88,8 @@ struct Movement
 
 private:
     double last_time = 0;
-    float x;
-    float y;
+    double x;
+    double y;
 
     bool can_stay_on_empty = false;
     Size obj_size {0, 0};
