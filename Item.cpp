@@ -11,13 +11,25 @@ Item::Item(int i_lvl, Point _pos) : item_lvl(i_lvl), pos(_pos)
     case 0:
         item_type = E_ItemTypes::Other;
         break;
-    case 1: 
+    case 1:
+    {
+        int t = std::rand() % 3;
+        if(true || t == 0)item_type = E_ItemTypes::Potion;
+        if(t == 1)item_type = E_ItemTypes::Boots; 
+        break;
+    }
     case 2:
+    {
+        int t = std::rand() % 3;
+        if (true || t == 0)item_type = E_ItemTypes::Potion;
+        if (t == 1)item_type = E_ItemTypes::Boots;
+        break;
+    }
     case 3:
     {
         int t = std::rand() % 3;
-        //if (t == 0)item_type = E_ItemTypes::Potion;
-        if (true || t == 1)item_type = E_ItemTypes::Boots;
+        if (true || t == 0)item_type = E_ItemTypes::Potion;
+        if (t == 1)item_type = E_ItemTypes::Boots;
         //if (t == 2)item_type = E_ItemTypes::Other;
         break;
     }
@@ -63,7 +75,13 @@ void Item::CreateHelper()
     case E_ItemTypes::Ring:
         break;
     case E_ItemTypes::Potion:
+    {
+        inventory = true;
+        spr = Sprite {"../resources/hp_pot_" + std::to_string(item_lvl) + ".png", (item_lvl == 1) ? 7 : 11};
+        ict = []() { return true; };
+        ia = [item_lvl = item_lvl, pos = pos](bool on) {};
         break;
+    }
     case E_ItemTypes::Book:
         break;
     case E_ItemTypes::Other:
