@@ -77,23 +77,31 @@ public:
 
     void InventoryDraw(Image &canvas) { invent.Draw(canvas); }
 
-    void AddSpeed(int add) { 
-    move_speed += add; 
-    std::cout << "player speed = " << move_speed << std::endl;
-    }
+    void AddSpeed(int add) { move_speed += add; }
+
+    void PressI() { invent.open = !invent.open; }
 private:
 
     struct Inventory
     {
+        bool open = false;
+
         std::vector<Item> inv_item;
         int boots_lvl = 0;
         int armor_lvl = 0;
         int keys = 0;
         int inv_size = 3;
-        Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), micro_inv("../resources/micro_inv.png"), key("../resources/key.png")
+        Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), inv_cell_canvas(W_WIDTH, TILE_SZ, 4), 
+                      micro_inv("../resources/micro_inv.png"), key("../resources/key.png"), 
+                      inv_cell("../resources/inv_cell.png"), inv_bg("../resources/inv_bg.png")
         {
             for (int i = 0; i < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; i++) {
                 micro_inv.Draw(micro_inv_canvas, {i * TILE_SZ, 0}, true);
+                inv_bg.Draw(inv_cell_canvas, {i * TILE_SZ, 0});
+            }
+
+            for (int i = 0; i < inv_size; i++) {
+                inv_cell.Draw(inv_cell_canvas, {i * TILE_SZ, 0});
             }
 
             auto shadow_func = [](auto x) { return (x.a == 255) ? Pixel {52,52,52,255} : x; };
@@ -111,9 +119,16 @@ private:
 
         void Draw(Image &canvas)
         {
-            micro_inv_canvas.FastDraw(canvas, TILE_SZ, W_HEIGHT - TILE_SZ);
+            if (open) {
+                inv_cell_canvas.FastDraw(canvas, TILE_SZ, W_HEIGHT - TILE_SZ);
+                for (int i = 0; i < inv_item.size(); i++) {
+                    auto &spr = inv_item[i].spr;
+                    spr.Draw(canvas, Point {i * TILE_SZ + (TILE_SZ - spr.Width()) / 2, Y + (TILE_SZ - spr.Height()) / 2}, true); 
+                }
+            }
+            micro_inv_canvas.FastDraw(canvas, TILE_SZ, W_HEIGHT - TILE_SZ - (open ? TILE_SZ : 0));
             int now_x_pos = 0;
-            int now_y_pos = Y + 5;
+            int now_y_pos = Y + 5 - (open ? TILE_SZ : 0);
 
             for (int i = 0; i < 3; i++) {
                 int p_draw = 10 + 40 * i;
@@ -126,7 +141,10 @@ private:
 
     private:
         Image micro_inv_canvas;
+        Image inv_cell_canvas;
         Image micro_inv;
+        Image inv_cell;
+        Image inv_bg;
         Image key_black;
         Image key;
         std::vector<Image> boots_imgs;

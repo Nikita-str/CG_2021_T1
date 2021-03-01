@@ -52,12 +52,17 @@ void OnKeyboardPressed(GLFWwindow* window, int key, int scancode, int action, in
 void processPlayerMovement(Player &player)
 {
 	static bool E_down = false;
+	static bool I_down = false;
 	bool X = Input.keys[GLFW_KEY_X];
 	if (X)player.Attack();
 
 	bool E = Input.keys[GLFW_KEY_E];
-	if (!E_down && E)GameMap::GetCur()->PressE();
+	if (E && !E_down)GameMap::GetCur()->PressE();
 	E_down = E;
+
+	bool I = Input.keys[GLFW_KEY_I];
+	if (I && !I_down)Player::Get().PressI();
+	I_down = I;
 
 	bool U = Input.keys[GLFW_KEY_W];
 	bool D = Input.keys[GLFW_KEY_S];
