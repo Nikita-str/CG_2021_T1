@@ -80,11 +80,18 @@ public:
     void AddSpeed(int add) { move_speed += add; }
     void HpRestore(int add) { hp += add; if (add > max_hp)hp = max_hp; }
 
+    void GetDamage(int dmg)
+    {
+        hp -= dmg;
+    }
+
     void PressI() { invent.open = !invent.open; invent.inv_pos = -1; }
     void PressLA() { invent.inv_pos = (invent.inv_pos == -1) ? invent.inv_size - 1 : (invent.inv_pos - 1 + invent.inv_size) % invent.inv_size; }
     void PressRA() { invent.inv_pos = (invent.inv_pos + 1) % invent.inv_size; }
     void PressU() { invent.Use(); }
     void PressO() { invent.Throw(position.CenterPos()); }
+
+    std::pair<int, int> GetHp()const { return {hp, max_hp}; }
 private:
 
     struct Inventory
@@ -123,10 +130,21 @@ private:
 
             key_black = Image::Image(key);
             key_black.PixelsChange(shadow_func, false);
+
+            Image hp_img {8,8,4};
+            hp_img.PixelsChange([](auto x) {return Pixel {52, 52, 52, 255}; }, false);
+            hp_imgs.push_back(std::move(hp_img));
+            for (int i = 1; i <= 10; i++) {
+                Image temp_img {8,8,4};
+                temp_img.PixelsChange([z = i](auto x) {return Pixel {(uint8_t)(52 + z * 2), (uint8_t)(52 + z * 11), (uint8_t)(52 - z * 5), 255}; }, false);
+                hp_imgs.push_back(std::move(temp_img));
+            }
+
         }
 
         void Use()
         {
+            Player::Get().GetDamage(1);//TODO:DEL
             if (inv_pos < 0)return;
             if (inv_item.size() <= inv_pos)return;
             if (!inv_item[inv_pos].can_be_used)return;
@@ -168,6 +186,21 @@ private:
                 now_x_pos = p_draw + 50;
             }
             boots_imgs[boots_lvl].Draw(canvas, Point {now_x_pos, now_y_pos + 3}, true);
+
+            auto hp_info = Player::Get().GetHp();
+            for (int i = 0; i < hp_info.second / 10; i++) {
+                Point temp_pos = Point {W_WIDTH - 18 - (i / 2) * 12, now_y_pos + 2 + (i % 2) * 12};
+                if (hp_info.first >= 10) {
+                    hp_imgs[10].Draw(canvas, temp_pos);
+                }
+                else if (hp_info.first < 0) {
+                    hp_imgs[0].Draw(canvas, temp_pos);
+                } else {
+                    hp_imgs[hp_info.first].Draw(canvas, temp_pos);
+                }
+
+                hp_info.first -= 10;
+            }
         }
 
     private:
@@ -180,6 +213,7 @@ private:
         Image key_black;
         Image key;
         std::vector<Image> boots_imgs;
+        std::vector<Image> hp_imgs;
 
         static constexpr int Y = W_HEIGHT - TILE_SZ;
     }invent;
@@ -203,8 +237,8 @@ private:
     Point die_pos;
     E_DieType die_type;
 
-    double hp = 40;
-    double max_hp = 40;
+    int hp = 40;
+    int max_hp = 40;
 
 };
 
