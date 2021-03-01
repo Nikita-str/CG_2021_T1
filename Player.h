@@ -78,7 +78,7 @@ public:
     void InventoryDraw(Image &canvas) { invent.Draw(canvas); }
 
     void AddSpeed(int add) { move_speed += add; }
-    void HpRestore(int add) { std::cout<<"hp hil " << add << std::endl; }
+    void HpRestore(int add) { hp += add; if (add > max_hp)hp = max_hp; }
 
     void PressI() { invent.open = !invent.open; invent.inv_pos = -1; }
     void PressLA() { invent.inv_pos = (invent.inv_pos == -1) ? invent.inv_size - 1 : (invent.inv_pos - 1 + invent.inv_size) % invent.inv_size; }
@@ -204,6 +204,7 @@ private:
     E_DieType die_type;
 
     double hp = 40;
+    double max_hp = 40;
 
 };
 
