@@ -63,6 +63,7 @@ void GameMap::Draw(Image &canvas)
     now_room->room_holst.FastDraw(canvas, now_room->room_holst.Height());
 
     now_room->map_objects.DrawItems(canvas);
+    now_room->map_objects.DrawEnemies(canvas);
 }
 
 GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri(_gri), parent(_parent), map_objects(_parent),
@@ -108,6 +109,7 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
 
     for (int i = 0; i < gri.keys_pos.size(); i++)map_objects.AddKey(gri.keys_pos[i]);
     for (int i = 0; i < gri.items.size(); i++)map_objects.AddItem(gri.items[i].first, gri.items[i].second);
+    for (int i = 0; i < gri.enemies.size(); i++)map_objects.AddEnemy(gri.enemies[i].first, gri.enemies[i].second);
 
 }
 
@@ -217,4 +219,5 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
 
     for (int i = 0; i < keys_pos.size(); i++)keys_pos[i].y = map_height - 1 - keys_pos[i].y;
     for (int i = 0; i < items.size(); i++)items[i].first.y = map_height - 1 - items[i].first.y;
+    for (int i = 0; i < enemies.size(); i++)enemies[i].first.y = map_height - 1 - enemies[i].first.y;
 }

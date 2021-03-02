@@ -26,6 +26,15 @@ inline bool operator== (const Point a, const Point b)
     return (a.x == b.x) && (a.y == b.y);
 }
 
+inline Point operator* (const Point a, const int mul)
+{
+    return {a.x * mul, a.y * mul};
+}
+
+inline Point operator+ (const Point a, const Point b)
+{
+    return {a.x + b.x, a.y + b.y};
+}
 struct Size
 {
     int w;
@@ -33,6 +42,8 @@ struct Size
     bool IsEmpty()const { return w == 0 && h == 0; }
 };
 
+
+static constexpr Point TILE_2 {TILE_SZ / 2 , TILE_SZ / 2};
 
 struct GameTime
 {

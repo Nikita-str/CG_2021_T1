@@ -6,6 +6,7 @@
 
 void MapObj::AddKey(Point pos){items.emplace_back(E_ItemTypes::Key, -1, pos);}
 void MapObj::AddItem(Point pos, int lvl){items.emplace_back(lvl, pos);}
+void MapObj::AddEnemy(Point pos, int type) { enemies.emplace_back(pos * TILE_SZ + TILE_2, type); }
 
 void MapObj::DrawItems(Image &canvas)
 {
@@ -39,6 +40,13 @@ void MapObj::DrawItems(Image &canvas)
     }
 
     ind_E = ind_e;
+}
+
+
+void MapObj::DrawEnemies(Image &canvas)
+{
+    for (int i = 0; i < enemies.size(); i++)
+        enemies[i].Draw(canvas);
 }
 
 void MapObj::PressE()

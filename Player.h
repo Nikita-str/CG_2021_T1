@@ -4,6 +4,7 @@
 #include "LiveObjSprite.h"
 #include "General.h"
 #include "Movement.h"
+#include "GameMap.h"
 
 struct Player
 {

@@ -11,8 +11,25 @@ enum class E_LiveObjState
     Attack
 };
 
+enum class E_LiveObjType
+{
+    Character,
+    Enemy
+};
+
 struct LiveObjSprite
 {
+
+    LiveObjSprite(E_LiveObjType must_enemy, int type, int move_frames, int attack_frames) : spr_states()
+    {
+        if (must_enemy != E_LiveObjType::Enemy)error("must enemy. for character use another constructor");
+        lo_type = must_enemy;
+        cur_dir = std::rand() % 2 ? E_Dir::LEFT : E_Dir::RIGHT;
+        std::string path_0 = "../resources/enemies/" + std::to_string(type) + "/";
+        spr_states.insert({E_LiveObjState::Idle, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "move.png", move_frames)});
+        spr_states.insert({E_LiveObjState::Attack, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "attack.png", attack_frames)});
+        //SetCurSprite();
+    }
 
     LiveObjSprite(const std::string &path0, SpritePixSz spr_sz, int ms_on_frame = 125, int scale = 1) : spr_states()
     {
@@ -38,16 +55,26 @@ struct LiveObjSprite
 
     bool SetDir(E_Dir new_dir)
     {
-        if (cur_dir != new_dir) {
+        if (lo_type == E_LiveObjType::Character) {
+            if (cur_dir != new_dir) {
+                cur_dir = new_dir;
+                SpritePrepare();
+                return true;
+            }
+            return false;
+        } else {
+            if (new_dir == E_Dir::UP || new_dir == E_Dir::DOWN)return false;
+            if (new_dir == cur_dir)return false;
             cur_dir = new_dir;
-            SpritePrepare();
             return true;
         }
-        return false;
+
     }
 
     bool SetState(E_LiveObjState new_state)
     {
+        if (lo_type == E_LiveObjType::Enemy && new_state == E_LiveObjState::Walk)new_state = E_LiveObjState::Idle;
+
         if (cur_state != new_state) {
             cur_state = new_state;
             SpritePrepare();
@@ -61,7 +88,9 @@ struct LiveObjSprite
 
     void Draw(Image &canvas, const Point p, bool flip_OX = true, bool flip_OY = false)
     {
-        cur_spr->Draw(canvas, p, flip_OX, flip_OY);
+        if (cur_spr == nullptr)SpritePrepare();
+     if(lo_type == E_LiveObjType::Character)cur_spr->Draw(canvas, p, flip_OX, flip_OY);
+     else cur_spr->Draw(canvas, p, flip_OX, flip_OY ^ (cur_dir == E_Dir::LEFT ? true : false));
     }
 
     const Image& GetImage(E_LiveObjState state, E_Dir dir, int frame) const {return spr_states.find(state)->second.find(dir)->second.GetFrame(frame);}
@@ -76,7 +105,9 @@ private:
 
     inline void SetCurSprite()
     {
-        cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
+        if(lo_type == E_LiveObjType::Character) cur_spr = &spr_states.find(cur_state)->second.find(cur_dir)->second;
+        else cur_spr = &spr_states.find(cur_state)->second.find(E_Dir::RIGHT)->second;
+
         if (cur_spr == nullptr) {
             cur_spr = &spr_states.find(E_LiveObjState::Idle)->second.find(cur_dir)->second;
         }
@@ -87,6 +118,8 @@ private:
     E_LiveObjState cur_state = E_LiveObjState::Idle;
 
     Sprite *cur_spr = nullptr;
+
+    E_LiveObjType lo_type = E_LiveObjType::Character;
 };
 
 #endif

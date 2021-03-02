@@ -12,19 +12,24 @@
 
 struct GameMap;
 #include "Item.h"
+#include "Enemy.h"
+
 struct MapObj
 {
     MapObj(GameMap &_parent) : items(), parent(_parent) {};
     //void AddItem(Point pos, int rarity);
     void AddKey(Point pos);
     void AddItem(Point pos, int lvl);
+    void AddEnemy(Point pos, int type);
     
     void PressE();
 
     void DrawItems(Image &canvas);
+    void DrawEnemies(Image &canvas);
     std::vector<Item> &GetItems() { return items; }
 private:
     std::vector<Item> items {};
+    std::vector<Enemy> enemies {};
     GameMap &parent;
     int ind_E = -1;
 };
