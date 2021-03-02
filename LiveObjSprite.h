@@ -88,9 +88,16 @@ struct LiveObjSprite
 
     void Draw(Image &canvas, const Point p, bool flip_OX = true, bool flip_OY = false)
     {
-        if (cur_spr == nullptr)SpritePrepare();
+     if (cur_spr == nullptr)SpritePrepare();
      if(lo_type == E_LiveObjType::Character)cur_spr->Draw(canvas, p, flip_OX, flip_OY);
      else cur_spr->Draw(canvas, p, flip_OX, flip_OY ^ (cur_dir == E_Dir::LEFT ? true : false));
+    }
+
+    void Draw(Image &canvas, const Point p, E_Dir dir, bool flip_OX = true, bool flip_OY = false)
+    {
+        if (cur_spr == nullptr)SpritePrepare();
+        if (lo_type == E_LiveObjType::Character)error("not for character");
+        else cur_spr->Draw(canvas, p, flip_OX, flip_OY ^ (dir == E_Dir::LEFT ? true : false));
     }
 
     const Image& GetImage(E_LiveObjState state, E_Dir dir, int frame) const {return spr_states.find(state)->second.find(dir)->second.GetFrame(frame);}
