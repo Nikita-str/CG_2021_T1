@@ -7,6 +7,23 @@ void Player::Attack()
     if (spr.SetState(E_LiveObjState::Attack)) {
         blocked_to_time = GameTime::Now().GetTime() + spr.GetCurAnimTime();
         now_attack = true;
+
+        auto dir = GetCurDir();
+        auto cp = position.CenterPos();
+        switch (dir) {
+        case E_Dir::UP:
+            GameMap::GetCur()->TryAttack({cp.x, cp.y + 25}, damage);
+            break;
+        case E_Dir::DOWN:
+            GameMap::GetCur()->TryAttack({cp.x, cp.y - 25}, damage);
+            break;
+        case E_Dir::LEFT:
+            GameMap::GetCur()->TryAttack({cp.x - 25, cp.y}, damage);
+            break;
+        case E_Dir::RIGHT:
+            GameMap::GetCur()->TryAttack({cp.x + 25, cp.y}, damage);
+            break;
+        }
     }
 }
 

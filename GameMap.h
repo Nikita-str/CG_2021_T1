@@ -27,6 +27,10 @@ struct MapObj
     void DrawItems(Image &canvas);
     void DrawEnemies(Image &canvas);
     std::vector<Item> &GetItems() { return items; }
+
+    bool CanStay(Point pos);
+
+    bool TryAttack(Point pos, int dmg);
 private:
     std::vector<Item> items {};
     std::vector<Enemy> enemies {};
@@ -73,16 +77,21 @@ public:
         Point RU {.x = pos.x + obj_sz.w - 1, .y = pos.y + obj_sz.h - 1};
         Point RD {.x = pos.x + obj_sz.w - 1, .y = pos.y};
 
+        Point R_UD {.x = pos.x + obj_sz.w - 1, .y = pos.y + obj_sz.h / 2};
+        Point L_UD {.x = pos.x,                .y = pos.y + obj_sz.h / 2};
+        Point LR_U {.x = pos.x + obj_sz.w / 2, .y = pos.y + obj_sz.h - 1};
+        Point LR_D {.x = pos.x + obj_sz.w / 2, .y = pos.y};
+
         switch (stay_type) {
         case GameMap::E_CanStayType::Right:
-            return CanPointStay(RU, empty_can) && CanPointStay(RD, empty_can);
+            return CanPointStay(RU, empty_can) && CanPointStay(RD, empty_can) && now_room->map_objects.CanStay(R_UD);
         case GameMap::E_CanStayType::Left:
-            return CanPointStay(LD, empty_can) && CanPointStay(LU, empty_can);
+            return CanPointStay(LD, empty_can) && CanPointStay(LU, empty_can) && now_room->map_objects.CanStay(L_UD);
         case GameMap::E_CanStayType::Up:
-            return CanPointStay(LU, empty_can) && CanPointStay(RU, empty_can);
+            return CanPointStay(LU, empty_can) && CanPointStay(RU, empty_can) && now_room->map_objects.CanStay(LR_U);
         case GameMap::E_CanStayType::Down:
-            return CanPointStay(LD, empty_can) && CanPointStay(RD, empty_can);
-        default:break;
+            return CanPointStay(LD, empty_can) && CanPointStay(RD, empty_can) && now_room->map_objects.CanStay(LR_D);
+        default: error("wrong enum state"); return false; 
         }
     }
 
@@ -91,6 +100,7 @@ public:
         auto t_type = now_room->gri.TileType(pos.x / TILE_SZ, pos.y / TILE_SZ);
         if (t_type == GameMap::E_TileType::Wall)return false;
         if (!empty_can && t_type == GameMap::E_TileType::Empty)return false;
+        if (!now_room->map_objects.CanStay(pos))return false;
         return true;
     }
 
@@ -115,6 +125,8 @@ public:
     }
 
     void PressE() { now_room->map_objects.PressE(); }
+
+    bool TryAttack(Point pos, int dmg) { return now_room->map_objects.TryAttack(pos, dmg); }
 
     std::vector<Item> &GetItems() { return now_room->map_objects.GetItems(); }
 

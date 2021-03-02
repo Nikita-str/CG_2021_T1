@@ -64,3 +64,21 @@ void MapObj::PressE()
         items.erase(items.begin() + ind_E);
     }
 }
+
+bool MapObj::CanStay(Point pos)
+{
+    for (int i = 0; i < enemies.size(); i++)if (enemies[i].IsCollide(pos, 5))return false;
+    return true;
+}
+
+bool MapObj::TryAttack(Point pos, int dmg)
+{
+    for (int i = 0; i < enemies.size(); i++) {
+        auto &e = enemies[i];
+        if (e.IsCollide(pos, 0)) {
+            e.WasAttacked(dmg);//die
+            return true;
+        }
+    }
+    return false;
+}
