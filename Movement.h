@@ -21,6 +21,7 @@ struct Movement
     Point CenterPos() const { return {(int)(x + obj_size.w/2), (int)(y + obj_size.h/2)}; }
 
     void SetPos(Point pos) { x = pos.x; y = pos.y; }
+    void SetCenter(Point cpos) { x = cpos.x - obj_size.w / 2; y = cpos.y - obj_size.h / 2; }
 
     int GetId()const { return Id; }
 

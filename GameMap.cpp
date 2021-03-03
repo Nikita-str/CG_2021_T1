@@ -103,6 +103,7 @@ void GameMap::load_room(int x, int y)
     } 
 
     now_room = &(loaded_room.find(Point {x,y})->second);
+    now_room->map_objects.AfterLoad(now_room->gri.map_width, now_room->gri.map_height);
 }
 
 void GameMap::Draw(Image &canvas)

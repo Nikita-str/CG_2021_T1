@@ -8,9 +8,19 @@ void MapObj::AddKey(Point pos){items.emplace_back(E_ItemTypes::Key, -1, pos);}
 void MapObj::AddItem(Point pos, int lvl){items.emplace_back(lvl, pos);}
 void MapObj::AddEnemy(Point pos, int type) { enemies.emplace_back(pos * TILE_SZ /*+ TILE_2*/, type); }
 
-void MapObj::EnemiesMove(Point player_pos)
+void MapObj::EnemiesMove(Point player_pos) { for (int i = 0; i < enemies.size(); i++)enemies[i].Move(player_pos); }
+void MapObj::AfterLoad(int tile_w, int tile_h)
 {
-    for (int i = 0; i < enemies.size(); i++)enemies[i].Move(player_pos);
+    for (int i = 0; i < enemies.size(); i++) {
+        enemies[i].mov.UpdateLastTime();
+        auto pos = enemies[i].mov.CenterPos();
+        bool change_pos = false;
+        if (pos.x < TILE_SZ) { pos.x += TILE_SZ; change_pos = true; }
+        if (pos.y < TILE_SZ) { pos.y += TILE_SZ; change_pos = true; }
+        if (pos.x / TILE_SZ >= tile_w - 1) { pos.x -= TILE_SZ; change_pos = true; }
+        if (pos.y / TILE_SZ >= tile_h - 1) { pos.y -= TILE_SZ; change_pos = true; }
+        if (change_pos)enemies[i].mov.SetCenter(pos);
+    }
 }
 
 void MapObj::DrawItems(Image &canvas)

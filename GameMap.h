@@ -47,6 +47,8 @@ struct MapObj
     
     void PressE();
 
+    void AfterLoad(int tile_w, int tile_h);
+
     void EnemiesMove(Point player_pos);
     void DrawItems(Image &canvas);
     void DrawEnemies(Image &canvas);
