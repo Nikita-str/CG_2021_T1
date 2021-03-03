@@ -45,6 +45,14 @@ Sprite::Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame, i
     SpriteFromImg(img0, p_frames, ms_on_frame, scale);
 }
 
+void Sprite::Draw(Image &canvas, const Point p, double time_start, bool flip_OX, bool flip_OY)
+{
+    if (frames == 0)return;
+    double dt = GameTime::Now().GetSecAfter(time_start);
+    if (dt < 0)dt = 0;
+    int _frame = (int)(dt / s_per_frame);
+    imgs[_frame % frames].Draw(canvas, p, flip_OX, flip_OY);
+}
 
 void Sprite::Draw(Image &canvas, const Point p, bool flip_OX, bool flip_OY)
 {

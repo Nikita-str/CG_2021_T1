@@ -28,7 +28,7 @@ private:
     static constexpr double get_time_before_attack(int type)
     {
         if (type == 0)return 0.3;
-        if (type == 1)return 0.9;
+        if (type == 1)return 3;// 0.9;
         return 0.5;
     }
     static constexpr bool is_fly(int type)
@@ -92,6 +92,8 @@ private:
     double time_when_try_attack = -1;
     bool walk_to_player = false;
     E_Dir attack_dir = E_Dir::DOWN;
+
+    double time_start = 0;
 
 };
 #endif

@@ -104,6 +104,12 @@ struct LiveObjSprite
         spr_states.find(state)->second.find(E_Dir::RIGHT)->second.Draw(canvas, p, flip_OX, flip_OY ^ (dir == E_Dir::LEFT ? true : false));
     }
 
+    void Draw(Image &canvas, const Point p, E_LiveObjState state, E_Dir dir, double start_time, bool flip_OX = true, bool flip_OY = false)
+    {
+        if (lo_type == E_LiveObjType::Character)error("not for character");
+        spr_states.find(state)->second.find(E_Dir::RIGHT)->second.Draw(canvas, p, start_time, flip_OX, flip_OY ^ (dir == E_Dir::LEFT ? true : false));
+    }
+
     const Image& GetImage(E_LiveObjState state, E_Dir dir, int frame) const {return spr_states.find(state)->second.find(dir)->second.GetFrame(frame);}
     const Image& GetImage(E_LiveObjState state, int frame) const {return spr_states.find(state)->second.find(cur_dir)->second.GetFrame(frame);}
 

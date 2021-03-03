@@ -19,6 +19,7 @@ struct Sprite
     Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame = 125, int scale = 1, bool _loop = true);
 
     void Draw(Image &canvas, const Point p, bool flip_OX = false, bool flip_OY = false);
+    void Draw(Image &canvas, const Point p, double time_start, bool flip_OX = false, bool flip_OY = false);
 
     void Restart() { time_start_prev_frame = GameTime::Now().GetTime(); frame_now = 0; }
 

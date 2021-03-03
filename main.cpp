@@ -7,6 +7,7 @@
 
 #define GLFW_DLL
 #include <GLFW/glfw3.h>
+#include <ctime>
 
 constexpr GLsizei WINDOW_WIDTH = W_WIDTH, WINDOW_HEIGHT = W_HEIGHT;
 
@@ -219,12 +220,12 @@ int main(int argc, char** argv)
 	while (gl_error != GL_NO_ERROR)
 		gl_error = glGetError();
 
+	std::srand(std::time(nullptr));
 
 	GameMap gmap{};
 	
 	LiveObjSprite player_img {HERO_0, SpritePixSz{16}, 125, 2};
-	Player player {gmap.GetPos(GameMap::E_MapPos::Center, Size{.w = 30, .h = 32}), player_img
-};
+	Player player {gmap.GetPos(GameMap::E_MapPos::Center, Size{.w = 30, .h = 32}), player_img};
 
 	//Image img(HERO_0 + "Walk/down.png");
 	/*
