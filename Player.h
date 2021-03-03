@@ -16,7 +16,7 @@ public:
     {
         Kill,
         EmptyStay,
-    };
+    }; 
 
     static Player &Get() { return *player_getter; }
 

@@ -10,16 +10,19 @@ private:
     static constexpr int get_hp(int type)
     {
         if (type == 0)return 20;
-        return 35;
+        if (type == 1)return 40;
+        return 30;
     }
     static constexpr Size get_sz(int type)
     {
         if (type == 0)return Size {.w = 41, .h = 34};
+        if (type == 1)return Size {.w = 28, .h = 38};
         return Size {2,2};
     }
     static constexpr int get_speed(int type)
     {
         if (type == 0)return 160;
+        if (type == 1)return 80;
         return 80;
     }
 

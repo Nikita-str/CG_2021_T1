@@ -1,6 +1,6 @@
 #include "Enemy.h"
 
-Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos)
+Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos + Point{.x = 0, .y = 5})
 {
     max_hp = get_hp(_type);
     hp = max_hp;

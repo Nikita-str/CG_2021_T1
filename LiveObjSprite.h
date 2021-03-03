@@ -21,14 +21,14 @@ enum class E_LiveObjType
 struct LiveObjSprite
 {
 
-    LiveObjSprite(E_LiveObjType must_enemy, int type, int move_frames, int attack_frames, int take_hit_frames) : spr_states()
+    LiveObjSprite(E_LiveObjType must_enemy, int type, int move_frames, int attack_frames, int take_hit_frames, int ms_speed) : spr_states()
     {
         if (must_enemy != E_LiveObjType::Enemy)error("must enemy. for character use another constructor");
         lo_type = must_enemy;
         cur_dir = std::rand() % 2 ? E_Dir::LEFT : E_Dir::RIGHT;
         std::string path_0 = "../resources/enemies/" + std::to_string(type) + "/";
-        spr_states.insert({E_LiveObjState::Idle, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "move.png", move_frames)});
-        spr_states.insert({E_LiveObjState::Attack, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "attack.png", attack_frames)});
+        spr_states.insert({E_LiveObjState::Idle, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "move.png", move_frames, ms_speed)});
+        spr_states.insert({E_LiveObjState::Attack, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "attack.png", attack_frames, ms_speed)});
         spr_states.insert({E_LiveObjState::TakeHit, std::map<E_Dir, Sprite>{}}).first->second.insert({E_Dir::RIGHT, Sprite(path_0 + "take_hit.png", take_hit_frames)});
         //SetCurSprite();
     }
