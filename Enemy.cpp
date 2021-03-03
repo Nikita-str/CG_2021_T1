@@ -49,7 +49,8 @@ void Enemy::Draw(Image &canvas)
     if (cur_state == E_LiveObjState::Attack && GameTime::Now().TimeCome(attack_end_time)) {
         //TODO:check player pos
         auto &pl = Player::Get();
-        if (fn_can_attack(pl, p, attack_dir)) pl.GetDamage(get_damage(type));
+        //if (fn_can_attack(pl, p, attack_dir)) pl.GetDamage(get_damage(type));
+        if (fn_can_attack(pl, p).first) pl.GetDamage(get_damage(type));
 
         attack_cd = true;
         time_start = GameTime::Now().GetTime();
@@ -85,11 +86,11 @@ bool Enemy::WasAttacked(int dmg)
 {
     if (!alive)return true;
     hp -= dmg;
-    if (cur_state != E_LiveObjState::Attack) {
+    if (cur_state != E_LiveObjState::Attack || hp <= 0) {
         cur_state = E_LiveObjState::TakeHit;
         time_start = GameTime::Now().GetTime();
         hit_take_time = time_start + SpriteManager::Get().enemy_spr[type].GetAnimTime(cur_state);
-    }
+    } 
     return hp <= 0;
 }
 
@@ -106,11 +107,11 @@ void Enemy::Move(Point player_pos)
         mov.UpdateLastTime();
         return;
     }
-    bool x_eq = std::abs(player_pos.x - pos.x) < 3;
+    bool x_eq = player_pos.x == pos.x;//std::abs(player_pos.x - pos.x) < 3;
     bool pl_x_less = player_pos.x < pos.x;
 
 
-    bool y_eq = std::abs(player_pos.y - pos.y) < 3;
+    bool y_eq = player_pos.y == pos.y;//std::abs(player_pos.y - pos.y) < 3;
     bool pl_y_less = player_pos.y < pos.y;
 
     if (!x_eq)cur_dir = pl_x_less ? E_Dir::LEFT : E_Dir::RIGHT;

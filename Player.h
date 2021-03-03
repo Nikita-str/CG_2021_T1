@@ -152,7 +152,7 @@ private:
 
         void Use()
         {
-            Player::Get().GetDamage(5);//TODO:DEL
+            //Player::Get().GetDamage(5);//TODO:DEL
             if (inv_pos < 0)return;
             if (inv_item.size() <= inv_pos)return;
             if (!inv_item[inv_pos].can_be_used)return;
