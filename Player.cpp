@@ -73,6 +73,8 @@ void Player::DieDraw(Image &canvas, double proc)
     if (die_type == E_DieType::EmptyStay) {
         SetPosY(-30 + -50 + (50 + die_pos.y) * (1 - proc));
         spr.GetImage(E_LiveObjState::Idle, 0).Draw(canvas, coords, false);
+    } else {
+        grave.Draw(canvas, coords, true);
     }
     //for kill draw grave
 }

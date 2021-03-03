@@ -20,7 +20,7 @@ public:
 
     static Player &Get() { return *player_getter; }
 
-    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite) 
+    explicit Player(Point pos, LiveObjSprite &sprite) : position(pos), coords(pos), old_coords(pos), spr(sprite), grave("../resources/grave.png", 4, 150, 1, false)
     {
         position.SetSize(Size {.w = 29, .h = 29});
         position.SetCanStay(true);
@@ -87,7 +87,7 @@ public:
     void GetDamage(int dmg)
     {
         hp -= dmg;
-        if (hp < 0) {
+        if (hp <= 0) {
             die_pos = coords;
             died = true;
             die_type = E_DieType::Kill;
@@ -143,7 +143,7 @@ private:
 
         void Use()
         {
-            Player::Get().GetDamage(1);//TODO:DEL
+            Player::Get().GetDamage(5);//TODO:DEL
             if (inv_pos < 0)return;
             if (inv_item.size() <= inv_pos)return;
             if (!inv_item[inv_pos].can_be_used)return;
@@ -221,13 +221,14 @@ private:
     int move_speed_ctrl = 40;
 
     LiveObjSprite &spr;
+    Sprite grave;
 
     bool now_attack = false;
     double blocked_to_time = -0.0;
 
     bool died = false;
-    Point die_pos;
-    E_DieType die_type;
+    Point die_pos {-1, -1};
+    E_DieType die_type = E_DieType::EmptyStay;
 
     int hp = 40;
     int max_hp = 40;

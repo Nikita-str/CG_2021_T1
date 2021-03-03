@@ -32,12 +32,12 @@ void Sprite::SpriteFromImg(Image &img0, int p_frames, int ms_on_frame, int scale
     }
 }
 
-Sprite::Sprite(const std::string &path, int p_frames, int ms_on_frame, int scale) : imgs()
+Sprite::Sprite(const std::string &path, int p_frames, int ms_on_frame, int scale, bool _loop) : imgs(), loop(_loop)
 {
     SpriteFromImg(Image {path, scale}, p_frames, ms_on_frame, scale);
 }
 
-Sprite::Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame, int scale) : imgs()
+Sprite::Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame, int scale, bool _loop) : imgs(), loop(_loop)
 {
     auto img0 = Image {path, scale};
     if (frame_sz.width == 0)std::abort();
@@ -64,7 +64,12 @@ void Sprite::Draw(Image &canvas, const Point p, bool flip_OX, bool flip_OY)
         time_start_prev_frame += add_frame * s_per_frame;
     }
 
-    frame_now = (frame_now + add_frame) % frames;
+    if (loop) {
+        frame_now = (frame_now + add_frame) % frames;
+    } else {
+        frame_now = frame_now + add_frame;
+        if (frame_now >= frames) frame_now = frames - 1;
+    }
 
     imgs[frame_now].Draw(canvas, p, flip_OX, flip_OY);
 }
