@@ -294,7 +294,10 @@ int main(int argc, char** argv)
 
 		  player.DieDraw(screenBuffer, proc);
 	  }
-
+	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 32}, E_Dir::UP);
+	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 64}, E_Dir::DOWN);
+	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 64+32}, E_Dir::LEFT);
+	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 128}, E_Dir::RIGHT);
 	  /*TODO:DEL +++*/
 	  //auto pos = player.GetPos();
 	  //screenBuffer.SetPixel(pos.x + 12, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});

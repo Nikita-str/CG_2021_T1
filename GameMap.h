@@ -14,6 +14,28 @@ struct GameMap;
 #include "Item.h"
 #include "Enemy.h"
 
+struct Door
+{
+    Point pos;
+    bool open;
+    E_Dir dir;
+    Door(Point _pos, E_Dir _dir): pos(_pos), open(false), dir(_dir){}
+    Door(Point _pos, bool _open, E_Dir _dir): pos(_pos), open(_open), dir(_dir) {}
+    bool IsRectIn(Point p, Size sz)
+    {
+        if (open)return false;
+        int w = TILE_SZ;
+        int h = TILE_SZ;
+        int p_x = pos.x * TILE_SZ + (TILE_SZ - w) / 2;
+        int p_y = pos.y * TILE_SZ + (TILE_SZ - h) / 2;
+        if (p.x < p_x && p.x + sz.w < p_x)return false;
+        if (p.x > p_x && p.x > p_x + w)return false;
+        if (p.y < p_y && p.y + sz.h < p_y)return false;
+        if (p.y > p_y && p.y > p_y + h)return false;
+        return true;
+    }
+};
+
 struct MapObj
 {
     MapObj(GameMap &_parent) : items(), parent(_parent) {};
@@ -21,6 +43,7 @@ struct MapObj
     void AddKey(Point pos);
     void AddItem(Point pos, int lvl);
     void AddEnemy(Point pos, int type);
+    void AddDoor(Point pos, E_Dir dir, bool open = false) { doors.emplace_back(pos, open, dir); };
     
     void PressE();
 
@@ -34,8 +57,10 @@ struct MapObj
 private:
     std::vector<Item> items {};
     std::vector<Enemy> enemies {};
+    std::vector<Door> doors {};
     GameMap &parent;
     int ind_E = -1;
+    int ind_D = -1;
 };
 
 

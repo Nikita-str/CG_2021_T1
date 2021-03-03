@@ -110,6 +110,10 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
     for (int i = 0; i < gri.keys_pos.size(); i++)map_objects.AddKey(gri.keys_pos[i]);
     for (int i = 0; i < gri.items.size(); i++)map_objects.AddItem(gri.items[i].first, gri.items[i].second);
     for (int i = 0; i < gri.enemies.size(); i++)map_objects.AddEnemy(gri.enemies[i].first, gri.enemies[i].second);
+    for (int i = 0; i < gri.door_pos.size(); i++) {
+        Point door_p = gri.door_pos[i];
+        map_objects.AddDoor(door_p, (door_p.x == 0) ? E_Dir::LEFT : (door_p.y == 0) ? E_Dir::DOWN : (door_p.y == gri.map_height - 1) ? E_Dir::UP : E_Dir::RIGHT);
+    }
 
 }
 
@@ -220,4 +224,5 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     for (int i = 0; i < keys_pos.size(); i++)keys_pos[i].y = map_height - 1 - keys_pos[i].y;
     for (int i = 0; i < items.size(); i++)items[i].first.y = map_height - 1 - items[i].first.y;
     for (int i = 0; i < enemies.size(); i++)enemies[i].first.y = map_height - 1 - enemies[i].first.y;
+    for (int i = 0; i < door_pos.size(); i++)door_pos[i].y = map_height - 1 - door_pos[i].y;
 }

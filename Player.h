@@ -42,6 +42,7 @@ public:
 
     void KeyInc() { invent.keys++; }
     void KeyDec() { invent.keys--; }
+    bool HaveKey() { return 0 < invent.keys; }
     bool CanTakeKey() const { return invent.keys < 3; }
 
     bool IsPlaceForItem() const { return invent.inv_item.size() < invent.inv_size; }

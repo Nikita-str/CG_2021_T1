@@ -26,10 +26,8 @@ inline bool operator== (const Point a, const Point b)
     return (a.x == b.x) && (a.y == b.y);
 }
 
-inline Point operator* (const Point a, const int mul)
-{
-    return {a.x * mul, a.y * mul};
-}
+inline Point operator* (const Point a, const int mul) { return {a.x * mul, a.y * mul}; }
+inline Point operator/ (const Point a, const int div) { return {a.x / div, a.y / div}; }
 
 inline Point operator+ (const Point a, const Point b)
 {

@@ -14,6 +14,7 @@ void MapObj::DrawItems(Image &canvas)
     auto pl_c = Player::Get().GetCenter();
 
     int ind_e = -1;
+    int ind_d = -1;
 
     Point pl_check_min {0,0};
     Size pl_check_sz {15,15};
@@ -26,7 +27,23 @@ void MapObj::DrawItems(Image &canvas)
     default:break;
     }
 
+    Point pl_check_door_min = pl_check_min;
+    if (pl_dir == E_Dir::UP)pl_check_door_min.y += 24;
+
     bool check_points = true;
+    bool player_have_key = Player::Get().HaveKey();
+    for (int i = 0; i < doors.size(); i++) {
+        auto &door= doors[i];
+        if (player_have_key && check_points) {
+            if (door.IsRectIn(pl_check_door_min, pl_check_sz)) {
+                parent.Draw_E(canvas, door.pos);
+                check_points = false;
+                ind_d = i; 
+            }
+        }
+        if(!door.open)SpriteManager::Get().DrawDoor(canvas, door.pos, door.dir);
+    }
+
     for (int i = 0; i < items.size(); i++) {
         auto &itm = items[i];
         if (check_points) {
@@ -40,6 +57,7 @@ void MapObj::DrawItems(Image &canvas)
     }
 
     ind_E = ind_e;
+    ind_D = ind_d;
 }
 
 
@@ -51,6 +69,12 @@ void MapObj::DrawEnemies(Image &canvas)
 
 void MapObj::PressE()
 {
+    if (ind_D != -1) {
+        if (Player::Get().HaveKey())Player::Get().KeyDec();
+        doors[ind_D].open = true;
+        ind_D = -1;
+        return;
+    }
     if (ind_E < 0)return;
     auto &itm = items[ind_E];
     if (!itm.ict())return;
@@ -63,10 +87,14 @@ void MapObj::PressE()
     } else {
         items.erase(items.begin() + ind_E);
     }
+    ind_E = -1;
 }
 
 bool MapObj::CanStay(Point pos)
 {
+    for (int i = 0; i < doors.size(); i++) 
+        if (!doors[i].open && (doors[i].pos == pos / TILE_SZ))return false;
+    
     for (int i = 0; i < enemies.size(); i++)if (enemies[i].IsCollide(pos, 5))return false;
     return true;
 }
