@@ -108,15 +108,11 @@ void Enemy::Move(Point player_pos)
             time_when_try_attack = get_time_before_attack(type) + GameTime::Now().GetTime();
         }
     } else {
-        if (attack_cd && GameTime::Now().TimeCome(attack_cd_time)) {
-            attack_cd = false;
-            /*auto can_a = fn_can_attack(pl, pos);
-            if (can_a.first) {
-                walk_to_player = true;
-                time_when_try_attack = GameTime::Now().GetTime();
-            } else walk_to_player = false;*/
-        }
-        else if (!attack_cd && GameTime::Now().TimeCome(time_when_try_attack)) {
+        bool cd_pass = (attack_cd && GameTime::Now().TimeCome(attack_cd_time));
+        bool attack_try = (!attack_cd && GameTime::Now().TimeCome(time_when_try_attack));
+        if (cd_pass)attack_cd = false;
+
+        if (cd_pass || attack_try) {
             auto can_a = fn_can_attack(pl, pos);
             if (can_a.first) {
                 attack_dir = can_a.second;

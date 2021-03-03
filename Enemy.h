@@ -22,13 +22,13 @@ private:
     static constexpr double get_cd(int type)
     {
         if (type == 0)return 0.7;
-        if (type == 1)return 2;
+        if (type == 1)return 2; // 0.1
         return 1.5;
     }
     static constexpr double get_time_before_attack(int type)
     {
         if (type == 0)return 0.3;
-        if (type == 1)return 3;// 0.9;
+        if (type == 1)return 0.9; // 5
         return 0.5;
     }
     static constexpr bool is_fly(int type)
