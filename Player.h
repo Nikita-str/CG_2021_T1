@@ -70,6 +70,14 @@ public:
         }
     }
 
+    bool PointIn(Point p, int border = 16)
+    {
+        auto cp = GetCenter();
+        return 
+            (cp.x - border < p.x && p.x < cp.x + border) &&
+            (cp.y - border < p.y && p.y < cp.y + border);
+    }
+
     E_Dir GetCurDir()const { return spr.GetCurDir(); }
     Point GetCenter()const { return position.CenterPos(); }
 

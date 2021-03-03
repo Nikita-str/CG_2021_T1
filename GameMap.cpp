@@ -42,11 +42,7 @@ bool GameMap::CanPointStay(Point pos, bool empty_can, int enemy_id) const
     auto t_type = now_room->gri.TileType(pos.x / TILE_SZ, pos.y / TILE_SZ);
     if (t_type == GameMap::E_TileType::Wall)return false;
     if (!empty_can && t_type == GameMap::E_TileType::Empty)return false;
-    if (enemy_id != Movement::PlayerId) {
-        Point cp = Player::Get().GetCenter();
-        if ((cp.x - 16 < pos.x && pos.x < cp.x + 16) &&
-            (cp.y - 16 < pos.y && pos.y < cp.y + 16))return false;
-    }
+    if (enemy_id != Movement::PlayerId && Player::Get().PointIn(pos))return false;
     if (!now_room->map_objects.CanStay(pos, enemy_id))return false;
     return true;
 }

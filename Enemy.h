@@ -13,6 +13,24 @@ private:
         if (type == 1)return 40;
         return 30;
     }
+    static constexpr int get_damage(int type)
+    {
+        if (type == 0)return 3;
+        if (type == 1)return 7;
+        return 5;
+    }
+    static constexpr double get_cd(int type)
+    {
+        if (type == 0)return 0.7;
+        if (type == 1)return 2;
+        return 1.5;
+    }
+    static constexpr double get_time_before_attack(int type)
+    {
+        if (type == 0)return 0.3;
+        if (type == 1)return 0.9;
+        return 0.5;
+    }
     static constexpr bool is_fly(int type)
     {
         if (type == 0)return true;
@@ -62,8 +80,18 @@ public:
     E_Dir cur_dir;
     E_LiveObjState cur_state;
 
+    bool alive = true;
+
+private:
     double hit_take_time = -1;
 
-    bool alive = true;
+    double attack_end_time = -1;
+    double attack_cd_time = -1;
+    bool attack_cd = false;
+
+    double time_when_try_attack = -1;
+    bool walk_to_player = false;
+    E_Dir attack_dir = E_Dir::DOWN;
+
 };
 #endif

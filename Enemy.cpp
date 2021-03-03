@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Player.h"
 
 Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos)
 {
@@ -21,6 +22,13 @@ void Enemy::Draw(Image &canvas)
     if (cur_state == E_LiveObjState::TakeHit && GameTime::Now().TimeCome(hit_take_time)) {
         cur_state = E_LiveObjState::Idle;
         if (hp <= 0)alive = false;
+    }
+
+    if (cur_state == E_LiveObjState::Attack && GameTime::Now().TimeCome(attack_end_time)) {
+        //TODO:check player pos
+        attack_cd = true;
+        attack_cd_time = GameTime::Now().GetTime() + get_cd(type);
+        cur_state = E_LiveObjState::Idle;
     }
 
     if (cur_state == E_LiveObjState::Walk) {
@@ -51,9 +59,20 @@ bool Enemy::WasAttacked(int dmg)
 {
     if (!alive)return true;
     hp -= dmg;
-    cur_state = E_LiveObjState::TakeHit;
-    hit_take_time = GameTime::Now().GetTime() + SpriteManager::Get().enemy_spr[type].GetAnimTime(cur_state);
+    if (cur_state != E_LiveObjState::Attack) {
+        cur_state = E_LiveObjState::TakeHit;
+        hit_take_time = GameTime::Now().GetTime() + SpriteManager::Get().enemy_spr[type].GetAnimTime(cur_state);
+    }
     return hp <= 0;
+}
+
+std::pair<bool, E_Dir> fn_can_attack(Player& pl, Point pos)
+{
+    if (pl.PointIn(pos + Point {TILE_SZ, 0}, 18)) return {true, E_Dir::RIGHT};
+    if (pl.PointIn(pos + Point {-TILE_SZ, 0}, 18))return {true, E_Dir::LEFT};
+    if (pl.PointIn(pos + Point {0, TILE_SZ}, 18)) return {true, E_Dir::UP};
+    if (pl.PointIn(pos + Point {0, -TILE_SZ}, 18)) return {true, E_Dir::DOWN};
+    return {false, E_Dir::DOWN};
 }
 
 void Enemy::Move(Point player_pos)
@@ -77,6 +96,24 @@ void Enemy::Move(Point player_pos)
     bool pl_y_less = player_pos.y < pos.y;
 
     if (!x_eq)cur_dir = pl_x_less ? E_Dir::LEFT : E_Dir::RIGHT;
+
+    auto &pl = Player::Get();
+    if (!walk_to_player) {
+        auto can_a = fn_can_attack(pl, pos);
+        if (can_a.first) {
+            walk_to_player = true; 
+            time_when_try_attack = get_time_before_attack(type) + GameTime::Now().GetTime();
+        }
+    } else {
+        if (GameTime::Now().TimeCome(time_when_try_attack)) {
+            auto can_a = fn_can_attack(pl, pos);
+            if (can_a.first) {
+                attack_dir = can_a.second;
+                cur_state = E_LiveObjState::Attack;
+                attack_end_time = GameTime::Now().GetTime() + SpriteManager::Get().enemy_spr[type].GetAnimTime(cur_state);
+            }
+        }
+    }
 
     mov.Move(x_eq ? 0 : pl_x_less ? -1 : 1, y_eq ? 0 : pl_y_less ? -1 : 1, speed);
     if (mov.Moved())cur_state = E_LiveObjState::Walk;
