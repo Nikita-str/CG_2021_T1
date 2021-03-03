@@ -1,7 +1,10 @@
 #include "Enemy.h"
 
-Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos + Point{.x = 0, .y = 5})
+Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos)
 {
+    if (is_fly(type))mov.SetCanStay(true);
+    mov.SetSize(get_mov_sz(_type));
+    id = mov.GetId();
     max_hp = get_hp(_type);
     hp = max_hp;
     sz = get_sz(_type);
@@ -13,7 +16,8 @@ Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos + Point{
 void Enemy::Draw(Image &canvas)
 {
     if (!alive)return;
-    auto p = mov.Pos();
+    auto p = mov.CenterPos();
+    p.y += 6;
     if (cur_state == E_LiveObjState::TakeHit && GameTime::Now().TimeCome(hit_take_time)) {
         cur_state = E_LiveObjState::Idle;
         if (hp <= 0)alive = false;
@@ -30,7 +34,7 @@ void Enemy::Draw(Image &canvas)
 bool Enemy::IsCollide(Point pos, int border_sz)
 {
     if (!alive)return false;
-    auto p = mov.Pos();
+    auto p = mov.CenterPos();
     if (pos.x <= p.x - sz.w/2 + border_sz)return false;
     if (pos.x >= p.x + sz.w/2 - border_sz)return false;
     if (pos.y <= p.y - sz.h/2 + border_sz)return false;
@@ -46,4 +50,25 @@ bool Enemy::WasAttacked(int dmg)
     cur_state = E_LiveObjState::TakeHit;
     hit_take_time = GameTime::Now().GetTime() + SpriteManager::Get().enemy_spr[type].GetAnimTime(cur_state);
     return hp <= 0;
+}
+
+void Enemy::Move(Point player_pos)
+{
+    if (!alive)return;
+    int r = get_r(type);
+    auto pos = mov.CenterPos();
+    if ((player_pos.x + r * TILE_SZ < pos.x) ||
+        (player_pos.x - r * TILE_SZ > pos.x) ||
+        (player_pos.y + r * TILE_SZ < pos.y) ||
+        (player_pos.y - r * TILE_SZ > pos.y)) {
+        mov.UpdateLastTime();
+        return;
+    }
+    bool x_eq = std::abs(player_pos.x - pos.x) < 3;
+    bool pl_x_less = player_pos.x < pos.x;
+
+    bool y_eq = std::abs(player_pos.y - pos.y) < 3;
+    bool pl_y_less = player_pos.y < pos.y;
+
+    mov.Move(x_eq ? 0 : pl_x_less ? -1 : 1, y_eq ? 0 : pl_y_less ? -1 : 1, speed);
 }

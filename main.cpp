@@ -265,6 +265,7 @@ int main(int argc, char** argv)
 	  if (is_alive) {
 
 		  gmap.CheckChangeMap();//TODO: add if(...) for effect
+		  gmap.EnemiesMove(player.GetCenter());
 
 		  gmap.Draw(screenBuffer);
 

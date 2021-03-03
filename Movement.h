@@ -5,9 +5,11 @@
 
 struct Movement
 {
-    Movement(int _x, int _y) : x(_x), y(_y) { last_time = GameTime::Now().GetTime(); }
-    Movement(Point pos) : Movement(pos.x, pos.y) { }
+    static constexpr int PlayerId = -5;
+    Movement(int _x, int _y) : x(_x), y(_y) { last_time = GameTime::Now().GetTime(); Id = Get__Id(); }
+    Movement(Point pos) : Movement(pos.x, pos.y) {}
     
+    void SetAsPlayer() { Id = PlayerId; }
     void SetSize(Size obj_sz) { obj_size = obj_sz; }
     void SetCanStay(bool on_empty) { can_stay_on_empty = on_empty; }
 
@@ -20,6 +22,8 @@ struct Movement
 
     void SetPos(Point pos) { x = pos.x; y = pos.y; }
 
+    int GetId()const { return Id; }
+
     bool Moved() 
     { 
         moved = moved && (GameTime::Now().GetSecAfter(last_moved_time) < time_for_unmoved);
@@ -27,6 +31,8 @@ struct Movement
     }
 
 private:
+    static int Get__Id() { static int id = 1;  return id++; }
+    int Id {0};
     double last_time = 0;
     double x;
     double y;

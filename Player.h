@@ -24,6 +24,7 @@ public:
     {
         position.SetSize(Size {.w = 29, .h = 29});
         position.SetCanStay(true);
+        position.SetAsPlayer();
         player_getter = this;
     };
 

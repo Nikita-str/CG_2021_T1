@@ -6,7 +6,12 @@
 
 void MapObj::AddKey(Point pos){items.emplace_back(E_ItemTypes::Key, -1, pos);}
 void MapObj::AddItem(Point pos, int lvl){items.emplace_back(lvl, pos);}
-void MapObj::AddEnemy(Point pos, int type) { enemies.emplace_back(pos * TILE_SZ + TILE_2, type); }
+void MapObj::AddEnemy(Point pos, int type) { enemies.emplace_back(pos * TILE_SZ /*+ TILE_2*/, type); }
+
+void MapObj::EnemiesMove(Point player_pos)
+{
+    for (int i = 0; i < enemies.size(); i++)enemies[i].Move(player_pos);
+}
 
 void MapObj::DrawItems(Image &canvas)
 {
@@ -90,12 +95,12 @@ void MapObj::PressE()
     ind_E = -1;
 }
 
-bool MapObj::CanStay(Point pos)
+bool MapObj::CanStay(Point pos, int enemy_id)
 {
     for (int i = 0; i < doors.size(); i++) 
         if (!doors[i].open && (doors[i].pos == pos / TILE_SZ))return false;
     
-    for (int i = 0; i < enemies.size(); i++)if (enemies[i].IsCollide(pos, 5))return false;
+    for (int i = 0; i < enemies.size(); i++)if (enemies[i].id != enemy_id && enemies[i].IsCollide(pos, 5))return false;
     return true;
 }
 

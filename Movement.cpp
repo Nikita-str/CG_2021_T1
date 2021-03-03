@@ -22,7 +22,7 @@ void Movement:: Move(int dx, int dy, int speed)
                 for (; (dx > 0) ? (x_temp > x_back) : (x_temp < x_back); x_temp += (dx > 0) ? -1 : 1) {
                     bool can_stay = GameMap::GetCur()->CanStay(
                         (dx > 0) ? GameMap::E_CanStayType::Right : GameMap::E_CanStayType::Left,
-                        Point {.x = (int)x_temp, .y = (int)y}, obj_size, can_stay_on_empty
+                        Point {.x = (int)x_temp, .y = (int)y}, obj_size, can_stay_on_empty, Id
                     );
                     if (can_stay) {
                         move_x = true;
@@ -41,7 +41,7 @@ void Movement:: Move(int dx, int dy, int speed)
                 for (; (dy > 0) ? (y_temp > y_back) : (y_temp < y_back); y_temp += (dy > 0) ? -1 : 1) {
                     bool can_stay = GameMap::GetCur()->CanStay(
                         (dy > 0) ? GameMap::E_CanStayType::Up : GameMap::E_CanStayType::Down,
-                        Point {.x = (int)x, .y = (int)y_temp}, obj_size, can_stay_on_empty
+                        Point {.x = (int)x, .y = (int)y_temp}, obj_size, can_stay_on_empty, Id
                     );
                     if (can_stay) {
                         move_y = true;
