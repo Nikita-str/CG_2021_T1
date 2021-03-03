@@ -47,7 +47,7 @@ void MapObj::DrawItems(Image &canvas)
     for (int i = 0; i < items.size(); i++) {
         auto &itm = items[i];
         if (check_points) {
-            if (itm.IsRectIn(pl_check_min, pl_check_sz)) {
+            if (itm.IsRectIn(pl_check_min, pl_check_sz) && itm.ict()) {
                 parent.Draw_E(canvas, itm.pos); 
                 check_points = false; 
                 ind_e = i; 

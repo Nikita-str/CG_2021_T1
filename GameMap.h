@@ -95,6 +95,8 @@ public:
 
     GameMap();
 
+    bool CheckChangeMap();
+
     bool CanStay(E_CanStayType stay_type, Point pos, Size obj_sz, bool empty_can)
     {
         Point LD {.x = pos.x, .y = pos.y};
@@ -162,6 +164,11 @@ private:
 
     struct GameRoomInfo // general, lfrom that you need copy data into other class, that changeble it's staitc info!
     {
+        static constexpr int U = 0;
+        static constexpr int L = 1;
+        static constexpr int R = 2;
+        static constexpr int D = 3;
+        static constexpr Point BAD_IN = Point {-1, -1};
         GameRoomInfo(char room_type);
         std::vector<std::vector<GameMap::E_TileType>> tile_type{};
         std::vector<std::pair<Point, int>> enemies{}; // point - pos, int - type
@@ -170,6 +177,8 @@ private:
         std::vector<Point> keys_pos{}; // point - pos
         int map_width = -1;
         int map_height = -1;
+
+        std::vector<Point> point_in {};
 
         GameMap::E_TileType TileType(int x, int y) const
         {

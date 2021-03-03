@@ -1,5 +1,6 @@
 #include "GameMap.h"
 #include <fstream>
+#include "Player.h"
 
 GameMap *GameMap::cur_map;
 
@@ -45,10 +46,43 @@ bool GameMap::CanThrowItem(Point pos)
     return E_TileType::Floor == now_room->gri.TileType(pos.x, pos.y);
 }
 
+bool GameMap::CheckChangeMap()
+{
+    auto center_pos = Player::Get().GetCenter();
+
+    #define Z(W)                                          \
+    load_room(now_x, now_y);                              \
+    auto &gri = now_room->gri;                            \
+    if (gri.point_in[W] == gri.BAD_IN)error("bad exit");  \
+    Player::Get().SetPos(gri.point_in[W] * TILE_SZ);      \
+    return true;
+
+    if (center_pos.x < 0) {
+        now_x -= 1;
+        Z(gri.L);
+    }
+    if (center_pos.x / TILE_SZ >= now_room->gri.map_width) {
+        now_x += 1;
+        Z(gri.R);
+    }
+    if (center_pos.y / TILE_SZ >= now_room->gri.map_height) {
+        now_y += 1;
+        Z(gri.U);
+    }
+    if (center_pos.y < 0) {
+        now_y -= 1;
+        Z(gri.D);
+    }
+
+    #undef Z
+    
+    return false;
+}
 
 void GameMap::load_room(int x, int y)
 {
     char key = room_map[y][x];
+    if (key == '#')error("bad transition");
     if (!loaded_room_info.contains(key))loaded_room_info.insert(std::pair {key, GameRoomInfo{key}});
 
     if (!loaded_room.contains({x, y})) {
@@ -123,6 +157,9 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     std::ifstream file {MAP_PATH + room_type + ".txt"};
     std::string line;
 
+    //U L R D
+    for(int i = 0; i < 4; i++)point_in.push_back(BAD_IN);
+
     int E_index = 0;
     int I_index = 0;
 
@@ -131,6 +168,8 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
 
     map_width = -1;
     map_height = 0;
+
+    Point U_point_in = BAD_IN;
 
     while (std::getline(file, line)) {
         end_trim(line);
@@ -146,6 +185,7 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
             if (z_plus && z_already_was_open)error("can be only one definition of room scheme in one file");
             if (z_minus && !z_open)error("room scheme was not open, but close!");
             z_open = !z_open;
+            if(z_minus)point_in[U] = U_point_in; 
             z_already_was_open = true;
             continue;
         }
@@ -153,29 +193,39 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
         if (z_open) {
             if (map_width < 0)map_width = sz;
             if (sz != map_width)error("wrong len of room scheme line : " + line);
+            U_point_in = BAD_IN;
             tile_type.emplace_back();
             for (int i = 0; i < sz; i++) {
                 char c = line[i];
-                if (c == '#')tile_type[map_height].push_back(GameMap::E_TileType::Wall);
-                else if (c == ' ')tile_type[map_height].push_back(GameMap::E_TileType::Empty);
-                else if (c == '.')tile_type[map_height].push_back(GameMap::E_TileType::Floor);
+                auto tt = GameMap::E_TileType::Nothing;
+                if (c == '#')tt = GameMap::E_TileType::Wall;
+                else if (c == ' ')tt = GameMap::E_TileType::Empty;
+                else if (c == '.')tt = GameMap::E_TileType::Floor;
                 else if (c == 'O') {
-                    tile_type[map_height].push_back(GameMap::E_TileType::Floor);
+                    tt = GameMap::E_TileType::Floor;
                     door_pos.emplace_back(Point {.x = i, .y = map_height});
                 } 
                 else if (c == 'E') {
-                    tile_type[map_height].push_back(GameMap::E_TileType::Floor);
+                    tt = GameMap::E_TileType::Floor;
                     enemies.emplace_back(std::pair(Point {.x = i, .y = map_height}, 0));
                 }
                 else if (c == 'I') {
-                    tile_type[map_height].push_back(GameMap::E_TileType::Floor);
+                    tt = GameMap::E_TileType::Floor;
                     items.emplace_back(std::pair(Point {.x = i, .y = map_height}, 0));
                 } 
                 else if (c == 'K') {
-                    tile_type[map_height].push_back(GameMap::E_TileType::Floor); 
+                    tt = GameMap::E_TileType::Floor;
                     keys_pos.emplace_back(Point {.x = i, .y = map_height});
                 }
                 else error("unknown type of tile '" + line.substr(0, 1) + "'");
+
+                if (tt == GameMap::E_TileType::Floor) {
+                    if (map_height == 0)point_in[D] = Point {.x = i, .y = map_height};
+                    if (i == 0)point_in[R] = Point {.x = i, .y = map_height};
+                    if (i == map_width - 1)point_in[L] = Point {.x = i, .y = map_height};
+                    U_point_in = Point {.x = i, .y = map_height};
+                }
+                tile_type[map_height].push_back(tt);
             }
             map_height++;
         }
@@ -225,4 +275,5 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     for (int i = 0; i < items.size(); i++)items[i].first.y = map_height - 1 - items[i].first.y;
     for (int i = 0; i < enemies.size(); i++)enemies[i].first.y = map_height - 1 - enemies[i].first.y;
     for (int i = 0; i < door_pos.size(); i++)door_pos[i].y = map_height - 1 - door_pos[i].y;
+    for (int i = 0; i < point_in.size(); i++)point_in[i].y = map_height - 1 - point_in[i].y;
 }

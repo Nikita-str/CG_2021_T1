@@ -264,6 +264,8 @@ int main(int argc, char** argv)
 
 	  if (is_alive) {
 
+		  gmap.CheckChangeMap();//TODO: add if(...) for effect
+
 		  gmap.Draw(screenBuffer);
 
 		  processPlayerMovement(player);

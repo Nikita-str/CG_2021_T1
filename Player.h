@@ -61,8 +61,8 @@ public:
     void CheckStayOnEmpty(Point cur_pos)
     {
         auto empty = GameMap::E_TileType::Empty;
-        if ((GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 12, .y = cur_pos.y + 1}) == empty) &&
-            (GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 19, .y = cur_pos.y + 1}) == empty)) {
+        if ((GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 12, .y = cur_pos.y + 2}) == empty) &&
+            (GameMap::GetCur()->PointType(Point {.x = cur_pos.x + 19, .y = cur_pos.y + 2}) == empty)) {
             die_pos = coords;
             died = true;
             die_type = E_DieType::EmptyStay;
@@ -77,6 +77,7 @@ public:
     E_DieType GetDiedType()const { return die_type; }
 
     void SetPosY(int y) { coords.y = y; }
+    void SetPos(Point pos) { position.SetPos(pos); coords = position.Pos(); }
 
     void InventoryDraw(Image &canvas) { invent.Draw(canvas); }
 

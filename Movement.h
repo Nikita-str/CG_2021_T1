@@ -18,6 +18,8 @@ struct Movement
     Point Pos() const { return {(int)x, (int)y}; }
     Point CenterPos() const { return {(int)(x + obj_size.w/2), (int)(y + obj_size.h/2)}; }
 
+    void SetPos(Point pos) { x = pos.x; y = pos.y; }
+
     bool Moved() 
     { 
         moved = moved && (GameTime::Now().GetSecAfter(last_moved_time) < time_for_unmoved);
