@@ -34,6 +34,12 @@ struct SpriteManager
 private:
     std::vector<Image> doors;
 
+    static constexpr int e_idle_frames(int type)
+    {
+        if (type == 0)return 8;
+        if (type == 1)return 4;
+        return 1;
+    }
     static constexpr int e_get_move_frames(int type)
     {
         if (type == 0)return 8;
@@ -63,7 +69,8 @@ private:
         for (int _type = 0; _type < 2; _type++)
             enemy_spr.emplace_back(E_LiveObjType::Enemy, _type, 
                 e_get_move_frames(_type), e_get_attack_frames(_type), 
-                e_get_take_hit_frames(_type), e_get_spr_speed(_type));
+                e_get_take_hit_frames(_type), e_idle_frames(_type),
+                e_get_spr_speed(_type));
 
         int sz = HP_SZ;
         Image hp_img {sz,sz,4};

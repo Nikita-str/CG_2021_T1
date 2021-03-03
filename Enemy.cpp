@@ -23,6 +23,10 @@ void Enemy::Draw(Image &canvas)
         if (hp <= 0)alive = false;
     }
 
+    if (cur_state == E_LiveObjState::Walk) {
+        if (!mov.Moved())cur_state = E_LiveObjState::Idle;
+    }
+
     int hp_x = p.x - (max_hp / 20) * 12;
     for (int i = 0; i * 10 < max_hp; i ++) {
         SpriteManager::Get().DrawHpBlock(canvas, {.x = hp_x + i * 12, .y = p.y - sz.h / 2 - 5}, hp - i * 10);
@@ -57,7 +61,8 @@ void Enemy::Move(Point player_pos)
     if (!alive)return;
     int r = get_r(type);
     auto pos = mov.CenterPos();
-    if ((player_pos.x + r * TILE_SZ < pos.x) ||
+    if ((cur_state == E_LiveObjState::TakeHit || cur_state == E_LiveObjState::Attack) ||
+        (player_pos.x + r * TILE_SZ < pos.x) ||
         (player_pos.x - r * TILE_SZ > pos.x) ||
         (player_pos.y + r * TILE_SZ < pos.y) ||
         (player_pos.y - r * TILE_SZ > pos.y)) {
@@ -67,8 +72,12 @@ void Enemy::Move(Point player_pos)
     bool x_eq = std::abs(player_pos.x - pos.x) < 3;
     bool pl_x_less = player_pos.x < pos.x;
 
+
     bool y_eq = std::abs(player_pos.y - pos.y) < 3;
     bool pl_y_less = player_pos.y < pos.y;
 
+    if (!x_eq)cur_dir = pl_x_less ? E_Dir::LEFT : E_Dir::RIGHT;
+
     mov.Move(x_eq ? 0 : pl_x_less ? -1 : 1, y_eq ? 0 : pl_y_less ? -1 : 1, speed);
+    if (mov.Moved())cur_state = E_LiveObjState::Walk;
 }
