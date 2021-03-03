@@ -15,6 +15,27 @@ Enemy::Enemy(Point center_pos, int _type) : type(_type), mov(center_pos)
     time_start += (std::rand() % 1000) / 1000.0;
 }
 
+bool fn_can_attack(Player &pl, Point pos, E_Dir dir, int sh = 18)
+{
+    int delta = 12;
+
+    switch (dir) {
+    case E_Dir::UP: return pl.PointIn(pos + Point {TILE_SZ, 0}, sh) || pl.PointIn(pos + Point {TILE_SZ, delta}, sh) || pl.PointIn(pos + Point {TILE_SZ, -delta}, sh);
+    case E_Dir::DOWN: return pl.PointIn(pos + Point {-TILE_SZ, 0}, sh) || pl.PointIn(pos + Point {-TILE_SZ, delta}, sh) || pl.PointIn(pos + Point {-TILE_SZ, -delta}, sh);
+    case E_Dir::LEFT: return pl.PointIn(pos + Point {0, TILE_SZ}, sh) || pl.PointIn(pos + Point {delta, TILE_SZ}, sh) || pl.PointIn(pos + Point {-delta, TILE_SZ}, sh);
+    case E_Dir::RIGHT: return pl.PointIn(pos + Point {0, -TILE_SZ}, sh) || pl.PointIn(pos + Point {delta, -TILE_SZ}, sh) || pl.PointIn(pos + Point {-delta, -TILE_SZ}, sh);
+    }
+    return false;
+}
+std::pair<bool, E_Dir> fn_can_attack(Player &pl, Point pos, int sh = 18)
+{
+    for (int dir = 0; dir < 4; dir++) {
+        auto dd = static_cast<E_Dir>(dir);
+        if (fn_can_attack(pl, pos, dd, sh))return {true, dd};
+    }
+    return {false, E_Dir::DOWN};
+}
+
 void Enemy::Draw(Image &canvas)
 {
     if (!alive)return;
@@ -27,6 +48,9 @@ void Enemy::Draw(Image &canvas)
 
     if (cur_state == E_LiveObjState::Attack && GameTime::Now().TimeCome(attack_end_time)) {
         //TODO:check player pos
+        auto &pl = Player::Get();
+        if (fn_can_attack(pl, p, attack_dir)) pl.GetDamage(get_damage(type));
+
         attack_cd = true;
         time_start = GameTime::Now().GetTime();
         attack_cd_time = time_start + get_cd(type);
@@ -67,15 +91,6 @@ bool Enemy::WasAttacked(int dmg)
         hit_take_time = time_start + SpriteManager::Get().enemy_spr[type].GetAnimTime(cur_state);
     }
     return hp <= 0;
-}
-
-std::pair<bool, E_Dir> fn_can_attack(Player& pl, Point pos)
-{
-    if (pl.PointIn(pos + Point {TILE_SZ, 0}, 18)) return {true, E_Dir::RIGHT};
-    if (pl.PointIn(pos + Point {-TILE_SZ, 0}, 18))return {true, E_Dir::LEFT};
-    if (pl.PointIn(pos + Point {0, TILE_SZ}, 18)) return {true, E_Dir::UP};
-    if (pl.PointIn(pos + Point {0, -TILE_SZ}, 18)) return {true, E_Dir::DOWN};
-    return {false, E_Dir::DOWN};
 }
 
 void Enemy::Move(Point player_pos)
