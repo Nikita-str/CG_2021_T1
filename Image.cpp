@@ -171,6 +171,17 @@ void Image::Draw(Image &canvas, std::function<Pixel(Pixel)> PixFunc) const
             canvas.SetPixel(x, y, PixFunc(GetPixel(x, y)));
 }
 
+void Image::Draw(Image &canvas, std::function<Pixel(Point, Pixel)> PixFunc) const
+{
+    int c_w = Width();
+    int c_h = Height();
+
+    #pragma omp parallel for
+    for (int y = 0; y < c_h; y++)
+        for (int x = 0; x < c_w; x++)
+            canvas.SetPixel(x, y, PixFunc(Point {x, y}, GetPixel(x, y)));
+}
+
 void Image::FastDraw(Image &canvas, int lines, int from_line) const
 {
     std::memcpy(canvas.data + (from_line * canvas.width), data, canvas.width * lines * sizeof(Pixel));

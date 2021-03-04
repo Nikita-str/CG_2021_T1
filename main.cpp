@@ -153,7 +153,7 @@ int initGL()
 	return 0;
 }
 
-Pixel lin_interp(Pixel from, Pixel to, double proc)
+inline Pixel lin_interp(Pixel from, Pixel to, double proc)
 {
 	uint8_t r = (uint8_t)(from.r + (to.r - from.r) * proc);
 	uint8_t g = (uint8_t)(from.g + (to.g - from.g) * proc);
@@ -169,6 +169,32 @@ Pixel only_r_color(Pixel from, double proc)
 	uint8_t b = (uint8_t)(from.b * (1 - proc));
 	uint8_t a = 255;// (uint8_t)(from.a + (to.a - from.a) * proc);
 	return Pixel {r,g,b,a};
+}
+
+Pixel win_fn_backup(Point p, Pixel from, double proc)
+{
+	double white_r = (1 - proc) * W2_DIAG;
+
+	int d = 0;
+	if (p.x < W2_WIDTH) d += (W2_WIDTH - p.x) * (W2_WIDTH - p.x);
+	if (p.x > W2_WIDTH) d += (p.x - W2_WIDTH) * (p.x - W2_WIDTH);
+	if (p.y < W2_HEIGHT) d += (W2_HEIGHT - p.y) * (W2_HEIGHT - p.y);
+	if (p.y > W2_HEIGHT) d += (p.y - W2_HEIGHT) * (p.y - W2_HEIGHT);
+	if (d > white_r)return KW_COLOR;
+	return from;
+}
+
+Pixel win_fn(Point p, Pixel from, double proc)
+{
+	double white_r = proc * W2_DIAG;
+
+	int d = 0;
+	if (p.x < W2_WIDTH) d += (W2_WIDTH - p.x) * (W2_WIDTH - p.x);
+	if (p.x > W2_WIDTH) d += (p.x - W2_WIDTH) * (p.x - W2_WIDTH);
+	if (p.y < W2_HEIGHT) d += (W2_HEIGHT - p.y) * (W2_HEIGHT - p.y);
+	if (p.y > W2_HEIGHT) d += (p.y - W2_HEIGHT) * (p.y - W2_HEIGHT);
+	if (d <= white_r)return KW_COLOR;
+	return lin_interp(from, KW_COLOR, white_r / d);
 }
 
 void Image_Draw_SpeedUp_Die(Image& screen_save, Image &canvas, double proc) 
@@ -188,42 +214,41 @@ void Image_Draw_SpeedUp_Die(Image& screen_save, Image &canvas, double proc)
 		}
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	if (!glfwInit())return -1;
 
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	//	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-  GLFWwindow*  window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "task1 base project", nullptr, nullptr);
-	if (window == nullptr)
-	{
+	GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "task1 base project", nullptr, nullptr);
+	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-	
-	glfwMakeContextCurrent(window); 
 
-	glfwSetKeyCallback        (window, OnKeyboardPressed);  
-	glfwSetCursorPosCallback  (window, OnMouseMove); 
-  glfwSetMouseButtonCallback(window, OnMouseButtonClicked);
-	glfwSetScrollCallback     (window, OnMouseScroll);
+	glfwMakeContextCurrent(window);
 
-	if(initGL() != 0) 
+	glfwSetKeyCallback(window, OnKeyboardPressed);
+	glfwSetCursorPosCallback(window, OnMouseMove);
+	glfwSetMouseButtonCallback(window, OnMouseButtonClicked);
+	glfwSetScrollCallback(window, OnMouseScroll);
+
+	if (initGL() != 0)
 		return -1;
-	
-  //Reset any OpenGL errors which could be present for some reason
+
+	//Reset any OpenGL errors which could be present for some reason
 	GLenum gl_error = glGetError();
 	while (gl_error != GL_NO_ERROR)
 		gl_error = glGetError();
 
 	std::srand(std::time(nullptr));
 
-	GameMap gmap{};
-	
+	GameMap gmap {};
+
 	LiveObjSprite player_img {HERO_0, SpritePixSz{16}, 125, 2};
 	Player player {gmap.GetPos(GameMap::E_MapPos::Center, Size{.w = 30, .h = 32}), player_img};
 
@@ -239,80 +264,95 @@ int main(int argc, char** argv)
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GL_CHECK_ERRORS;
 
-  double sec = GameTime::Now().GetTime();
-  int frames = 0;
+	double sec = GameTime::Now().GetTime();
+	int frames = 0;
 
-  bool is_alive = true;
-  Image for_die = Image::Image(0, 0, 0);
+	bool is_alive = true;
+	Image for_die = Image::Image(0, 0, 0);
 
-  double die_time = 0;
-  double die_duration = 3;
-  Player::E_DieType die_type;
-  bool last_die_draw = false;
+	double die_time = 0;
+	double die_duration = 3;
+	Player::E_DieType die_type;
+	bool last_die_draw = false;
 
-  while (!glfwWindowShouldClose(window)) {
-	  GameTime::Now().SetCur(glfwGetTime());
+	bool win = false;
+	double win_time = 0;
+	const double win_duration = 3;
+	Image win_img {PATH + "win.png"};
 
-	  if (GameTime::Now().GetTime() - sec > 1) {
-		  sec = GameTime::Now().GetTime();
-		  std::cout << "fps : " << frames << std::endl;
-		  frames = 0;
-	  }
-	  frames++;
-		  
-	  glfwPollEvents();
+	while (!glfwWindowShouldClose(window)) {
+		GameTime::Now().SetCur(glfwGetTime());
+
+		if (GameTime::Now().GetTime() - sec > 1) {
+			sec = GameTime::Now().GetTime();
+			std::cout << "fps : " << frames << std::endl;
+			frames = 0;
+		}
+		frames++;
+
+		glfwPollEvents();
 
 
-	  if (is_alive) {
+		if (!win) {
+			win = gmap.CheckWin();
+			if (win) {
+				for_die = Image {screenBuffer};
+				win_time = GameTime::Now().GetTime();
+			}
+		}
 
-		  gmap.CheckChangeMap();//TODO: add if(...) for effect
-		  gmap.EnemiesMove(player.GetCenter());
+		if (!win && is_alive) {
+			gmap.CheckChangeMap();//TODO: add if(...) for effect
+			gmap.EnemiesMove(player.GetCenter());
 
-		  gmap.Draw(screenBuffer);
+			gmap.Draw(screenBuffer);
 
-		  processPlayerMovement(player);
-		  is_alive = !player.GetIsDied();
+			processPlayerMovement(player);
+			is_alive = !player.GetIsDied();
 
-		  if (!is_alive) { // die
-			  for_die = Image {screenBuffer};
-			  die_time = GameTime::Now().GetTime();
-			  die_type = player.GetDiedType();
-		  }
-		  else {
-			  player.Draw(screenBuffer);
-			  player.InventoryDraw(screenBuffer);
-		  }
-	  } 
-	  if(!is_alive) {
-		  double proc = GameTime::Now().GetSecAfter(die_time) / die_duration;
-		  if (proc >= 1) {
-			  if (last_die_draw) break;
-			  last_die_draw = true;
-		  }
+			if (!is_alive) { // die
+				for_die = Image {screenBuffer};
+				die_time = GameTime::Now().GetTime();
+				die_type = player.GetDiedType();
+			} else {
+				player.Draw(screenBuffer);
+				player.InventoryDraw(screenBuffer);
+			}
+		}
+		if (!is_alive) {
+			double proc = GameTime::Now().GetSecAfter(die_time) / die_duration;
+			if (proc >= 1) {
+				if (last_die_draw) break;
+				last_die_draw = true;
+			}
 
-		  if(die_type == Player::E_DieType::Kill)
-			  for_die.Draw(screenBuffer, [&](auto x) {return only_r_color(x, proc); });
-		  else if (die_type == Player::E_DieType::EmptyStay)
-			  for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {27, 20, 27, 255}, proc); });
-			  //Image_Draw_SpeedUp_Die(for_die, screenBuffer, proc);
+			if (die_type == Player::E_DieType::Kill)
+				for_die.Draw(screenBuffer, [&](auto x) {return only_r_color(x, proc); });
+			else if (die_type == Player::E_DieType::EmptyStay)
+				for_die.Draw(screenBuffer, [&](auto x) {return lin_interp(x, Pixel {27, 20, 27, 255}, proc); });
+			//Image_Draw_SpeedUp_Die(for_die, screenBuffer, proc);
 
-		  player.DieDraw(screenBuffer, proc);
-	  }
-	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 32}, E_Dir::UP);
-	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 64}, E_Dir::DOWN);
-	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 64+32}, E_Dir::LEFT);
-	  SpriteManager::Get().DrawDoor(screenBuffer, {32, 128}, E_Dir::RIGHT);
-	  /*TODO:DEL +++*/
-	  //auto pos = player.GetPos();
-	  //screenBuffer.SetPixel(pos.x + 12, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});
-	  //screenBuffer.SetPixel(pos.x + 19, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});
-	  /*TODO:DEL ---*/
+			player.DieDraw(screenBuffer, proc);
+		}
 
-	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_CHECK_ERRORS;
-	  glDrawPixels(WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer.Data()); GL_CHECK_ERRORS;
+		if (win) {
+			double proc = GameTime::Now().GetSecAfter(win_time) / win_duration;
+			if (proc >= 1)break;
+			for_die.Draw(screenBuffer, [&](auto pos, auto pix) {return win_fn(pos, pix, proc); });
+			win_img.Draw(screenBuffer, Point {.x = (W_WIDTH - win_img.Width()) / 2, .y = (W_HEIGHT - win_img.Height()) / 2}, true);
 
-	  glfwSwapBuffers(window);
-  }
+		}
+		/*TODO:DEL +++*/
+		//auto pos = player.GetPos();
+		//screenBuffer.SetPixel(pos.x + 12, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});
+		//screenBuffer.SetPixel(pos.x + 19, pos.y + 1, Pixel {.r = 255,  .g = 0, .b = 0, .a = 255,});
+		/*TODO:DEL ---*/
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_CHECK_ERRORS;
+		glDrawPixels(WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer.Data()); GL_CHECK_ERRORS;
+
+		glfwSwapBuffers(window);
+	}
 
 	glfwTerminate();
 	return 0;

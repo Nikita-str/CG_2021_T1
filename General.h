@@ -8,6 +8,10 @@ static constexpr int TILE_SZ = 32;
 
 static constexpr int W_WIDTH = 1024;
 static constexpr int W_HEIGHT = 720;
+static constexpr int W2_WIDTH = W_WIDTH / 2;
+static constexpr int W2_HEIGHT = W_HEIGHT / 2;
+static constexpr int W_DIAG = W_WIDTH * W_WIDTH + W_HEIGHT * W_HEIGHT;
+static constexpr int W2_DIAG = W2_WIDTH * W2_WIDTH + W2_HEIGHT * W2_HEIGHT;
 
 struct Point
 {

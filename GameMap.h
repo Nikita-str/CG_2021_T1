@@ -98,7 +98,9 @@ public:
 
     GameMap();
 
+    bool CheckWin();
     bool CheckChangeMap();
+
     void EnemiesMove(Point player_pos) { now_room->map_objects.EnemiesMove(player_pos); }
 
     bool CanStay(E_CanStayType stay_type, Point pos, Size obj_sz, bool empty_can, int enemy_id)
@@ -166,12 +168,14 @@ private:
         static constexpr int R = 2;
         static constexpr int D = 3;
         static constexpr Point BAD_IN = Point {-1, -1};
+        static constexpr Point NOT_WIN_POINT = Point {-32, -128};
         GameRoomInfo(char room_type);
         std::vector<std::vector<GameMap::E_TileType>> tile_type{};
         std::vector<std::pair<Point, int>> enemies{}; // point - pos, int - type
         std::vector<Point> door_pos{}; // point - pos
         std::vector< std::pair<Point, int>> items{}; // point - pos,  int - rarity
         std::vector<Point> keys_pos{}; // point - pos
+        Point win_point = NOT_WIN_POINT;
         int map_width = -1;
         int map_height = -1;
 

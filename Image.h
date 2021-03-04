@@ -46,6 +46,8 @@ inline bool operator< (const Pixel a, const Pixel b)
 
 
 constexpr Pixel backgroundColor{0, 0, 0, 0};
+constexpr Pixel WHITE_COLOR{255, 255, 255, 255};
+constexpr Pixel KW_COLOR{210, 255, 255, 255};
 
 enum class E_ImgRotation { Rot_90 };
 
@@ -107,6 +109,7 @@ struct Image
   void FastDraw(Image &canvas, int lines, int from_line = 0) const;
 
   void Draw(Image &canvas, std::function<Pixel(Pixel)> PixFunc) const;
+  void Draw(Image &canvas, std::function<Pixel(Point, Pixel)> PixFunc) const;
 
   /// <summary>chnage image : image[x,y] = PixFunc(image[x,y])</summary>
   /// <param name="with_save_pixel">if we know that dif color on that image few then we can hash PixFunc result value</param>

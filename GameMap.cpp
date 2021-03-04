@@ -55,6 +55,19 @@ bool GameMap::CanThrowItem(Point pos)
     return E_TileType::Floor == now_room->gri.TileType(pos.x, pos.y);
 }
 
+bool GameMap::CheckWin()
+{
+    auto wp = now_room->gri.win_point;
+    if (wp == GameRoomInfo::NOT_WIN_POINT)return false;
+    auto cp = Player::Get().GetCenter();
+
+    if ((cp.x < 0) && ((cp + Point {TILE_SZ, 0}) / TILE_SZ == wp))return true;
+    if ((cp.y < 0) && ((cp + Point {0, TILE_SZ}) / TILE_SZ == wp))return true;
+    if ((cp.x / TILE_SZ >= now_room->gri.map_width) && ((cp + Point {-TILE_SZ, 0}) / TILE_SZ == wp))return true;
+    if ((cp.y / TILE_SZ >= now_room->gri.map_height) && ((cp + Point {0, -TILE_SZ}) / TILE_SZ == wp))return true;
+    return false;
+}
+
 bool GameMap::CheckChangeMap()
 {
     auto center_pos = Player::Get().GetCenter();
@@ -226,6 +239,9 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
                 else if (c == 'K') {
                     tt = GameMap::E_TileType::Floor;
                     keys_pos.emplace_back(Point {.x = i, .y = map_height});
+                } else if (c == 'W') {
+                    tt = GameMap::E_TileType::Floor;
+                    win_point = {.x = i, .y = map_height};
                 }
                 else error("unknown type of tile '" + line.substr(0, 1) + "'");
 
@@ -286,4 +302,5 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     for (int i = 0; i < enemies.size(); i++)enemies[i].first.y = map_height - 1 - enemies[i].first.y;
     for (int i = 0; i < door_pos.size(); i++)door_pos[i].y = map_height - 1 - door_pos[i].y;
     for (int i = 0; i < point_in.size(); i++)point_in[i].y = map_height - 1 - point_in[i].y;
+    win_point.y = map_height - 1 - win_point.y;
 }
