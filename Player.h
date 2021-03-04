@@ -281,7 +281,7 @@ private:
     int hp = 40;
     int max_hp = 40;
 
-    int damage = 70;// 3;
+    int damage = 3;
 
 };
 
