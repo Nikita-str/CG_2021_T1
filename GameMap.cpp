@@ -174,7 +174,7 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
         bool _U = (door_p.y == gri.map_height - 1);
         bool _R = (door_p.x == gri.map_width - 1);
         if (_L || _D || _R || _U)map_objects.AddDoor(door_p, _L ? E_Dir::LEFT : _D ? E_Dir::DOWN : _U ? E_Dir::UP : E_Dir::RIGHT);
-        else map_objects.AddDoor(door_p, gri.tile_type[door_p.y][door_p.x - 1] == E_TileType::Wall ? E_Dir::UP : E_Dir::LEFT);
+        else map_objects.AddDoor(door_p, gri.TileType(door_p.x - 1, door_p.y) == E_TileType::Wall ? E_Dir::UP : E_Dir::LEFT);
     }
 
 }
@@ -200,7 +200,7 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
     Point U_point_in = BAD_IN;
 
     while (std::getline(file, line)) {
-        end_trim(line);
+        if(!z_open)end_trim(line);
         int sz = line.size();
         if (sz == 0 || line[0] == '/')continue;
 
