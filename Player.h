@@ -109,6 +109,16 @@ public:
     void PressU() { invent.Use(); }
     void PressO() { invent.Throw(position.CenterPos()); }
 
+    void DamageChange(int delta) { damage += delta; }
+    void InventorySizeInc() { invent.SizeInc(); }
+    void MaxHpChange(int delta)
+    {
+        if (hp == max_hp) hp += delta;
+        else hp = (int)(hp * (1 + delta / (double)max_hp));
+        max_hp += delta;
+        if (hp <= 0)hp = 1;
+    }
+
     std::pair<int, int> GetHp()const { return {hp, max_hp}; }
 private:
 
@@ -157,6 +167,12 @@ private:
 
             key_black = Image::Image(key);
             key_black.PixelsChange(shadow_func, false);
+        }
+
+        void SizeInc()
+        {
+            inv_cell.Draw(inv_cell_canvas, {inv_size * TILE_SZ, 0});
+            inv_size++;
         }
 
         void Use()

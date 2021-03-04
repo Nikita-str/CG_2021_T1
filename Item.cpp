@@ -10,46 +10,67 @@ constexpr int case_special(const char* s, int sz)
 }
 
 constexpr int case_book = case_special("book", 4);
+constexpr int case_ring = case_special("ring", 4);
 constexpr int case_boots = case_special("boots", 5);
+constexpr int case_potion = case_special("pot", 3);
 
 Item::Item(int i_lvl, Point _pos) : item_lvl(i_lvl), pos(_pos)
 {
     switch (item_lvl) {
     case -1: item_type = E_ItemTypes::Key; break;
-        //case 0: item_type = E_ItemTypes::Potion; break;
 
-    case 0:
-        item_type = E_ItemTypes::Other;
-        break;
+    case 0: item_type = E_ItemTypes::Other; break;
     case 1:
     {
-        int t = std::rand() % 3;
-        if (true || t == 0)item_type = E_ItemTypes::Potion;
+        int t = std::rand() % 4;
+        if (t == 0)item_type = E_ItemTypes::Potion;
         if (t == 1)item_type = E_ItemTypes::Boots;
+        if (t == 2)item_type = E_ItemTypes::Book;
+        if (t == 3)item_type = E_ItemTypes::Ring;
         break;
     }
     case 2:
     {
-        int t = std::rand() % 3;
-        if (true || t == 0)item_type = E_ItemTypes::Potion;
-        if (t == 1)item_type = E_ItemTypes::Boots;
+        int t = std::rand() % 5;
+        if (t < 2)item_type = E_ItemTypes::Potion;
+        if (t == 2)item_type = E_ItemTypes::Boots;
+        if (t == 3)item_type = E_ItemTypes::Book;
+        if (t == 4)item_type = E_ItemTypes::Ring;
         break;
     }
     case 3:
     {
-        int t = std::rand() % 3;
-        if (true || t == 0)item_type = E_ItemTypes::Potion;
-        if (t == 1)item_type = E_ItemTypes::Boots;
-        //if (t == 2)item_type = E_ItemTypes::Other;
+        int t = std::rand() % 5;
+        if (t < 3)item_type = E_ItemTypes::Potion;
+        if (t == 3)item_type = E_ItemTypes::Boots;
+        if (t == 4)item_type = E_ItemTypes::Book;
         break;
     }
     case case_boots:
+    case case_book:
     {
         int t = std::rand() % 18;
-        item_type = E_ItemTypes::Boots;
+        item_type = (item_lvl == case_book) ? E_ItemTypes::Book : E_ItemTypes::Boots;
         if (t < 11)item_lvl = 1;
         else if (t < 16)item_lvl = 2;
         else item_lvl = 3;
+        break;
+    }
+    case case_potion:
+    {
+        int t = std::rand() % 18;
+        item_type = E_ItemTypes::Potion;
+        if (t < 8)item_lvl = 1;
+        else if (t < 14)item_lvl = 2;
+        else item_lvl = 3;
+        break;
+    }
+    case case_ring:
+    {
+        int t = std::rand() % 18;
+        item_type = E_ItemTypes::Ring;
+        if (t < 13)item_lvl = 1;
+        else item_lvl = 2;
         break;
     }
     default:
@@ -92,7 +113,38 @@ void Item::CreateHelper()
         break;
     }
     case E_ItemTypes::Ring:
+    {
+        inventory = true;
+        Image img {0, 0, 0};
+        if (item_lvl == 1) {
+            if (std::rand() % 2) {
+                img = Image {"../resources/ring_hp_1.png"};
+                ia = [](bool on) {
+                    auto &pl = Player::Get();
+                    if (on) pl.MaxHpChange(10);
+                    else pl.MaxHpChange(-10);
+                };
+            } else {
+                img = Image {"../resources/ring_dmg_1.png"};
+                ia = [](bool on) {
+                    auto &pl = Player::Get();
+                    if (on) pl.DamageChange(1);
+                    else pl.DamageChange(-1);
+                };
+            }
+        } else {
+            img = Image {"../resources/ring_dmg_2.png"};
+            ia = [](bool on) {
+                auto &pl = Player::Get();
+                if (on) pl.DamageChange(2);
+                else pl.DamageChange(-2);
+            };
+        }
+        img.PixelsChange([](auto x) { return (x.a == 0 || x.r == x.b && x.r == x.g && x.r == 255) ? TRANSP_COLOR : x; }, false);
+        spr = Sprite {img, SpritePixSz(15)};
+        ict = IsPlaceForItem;
         break;
+    }
     case E_ItemTypes::Potion:
     {
         inventory = true;
@@ -104,13 +156,49 @@ void Item::CreateHelper()
         break;
     }
     case E_ItemTypes::Book:
+    {
+        inventory = true;
+        can_be_used = true;
+        Image img {0, 0, 0};
+        if (item_lvl == 3 || item_lvl == 1) {
+            img = Image {"../resources/book_dmg_" + std::to_string(item_lvl) + ".png"};
+            use = [power = item_lvl]() { Player::Get().DamageChange(power); };
+        } else {
+            int t = std::rand() % 3;
+            switch (t) {
+            case 1:
+            {
+                img = Image {"../resources/book_hp.png"};
+                use = []() { Player::Get().MaxHpChange(10); };
+                break;
+            }
+            case 2:
+            {
+                img = Image {"../resources/book_inv.png"};
+                use = []() { Player::Get().InventorySizeInc(); };
+                break;
+            }
+            default:
+            {
+                img = Image {"../resources/book_dmg_2.png"};
+                use = []() { Player::Get().DamageChange(2); };
+                break;
+            }
+            }
+        }
+
+        img.PixelsChange([](auto x) { return (x.a == 0 || x.r == x.b && x.r == x.g && x.r == 255) ? TRANSP_COLOR : x; }, false);
+        spr = Sprite{img, SpritePixSz(14)};
+        ict = IsPlaceForItem;
+        ia = [item_lvl = item_lvl, pos = pos](bool on) {};
         break;
+    }
     case E_ItemTypes::Other:
     {
         inventory = true;
         spr = Sprite {"../resources/feat.png", 1};
         ict = IsPlaceForItem;
-        ia = [pos = pos, this](bool on) {
+        ia = [pos = pos](bool on) {
             auto &pl = Player::Get();
             if (on) {
                 pl.AddSpeed(15);

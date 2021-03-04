@@ -17,6 +17,7 @@ struct Sprite
     Sprite() {};
     Sprite(const std::string &path, int p_frames, int ms_on_frame = 125, int scale = 1, bool _loop = true);
     Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame = 125, int scale = 1, bool _loop = true);
+    Sprite(Image &img, SpritePixSz frame_sz, int ms_on_frame = 125, int scale = 1, bool _loop = true);
 
     void Draw(Image &canvas, const Point p, bool flip_OX = false, bool flip_OY = false);
     void Draw(Image &canvas, const Point p, double time_start, bool flip_OX = false, bool flip_OY = false);

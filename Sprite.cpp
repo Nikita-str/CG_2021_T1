@@ -45,6 +45,13 @@ Sprite::Sprite(const std::string &path, SpritePixSz frame_sz, int ms_on_frame, i
     SpriteFromImg(img0, p_frames, ms_on_frame, scale);
 }
 
+Sprite::Sprite(Image &img, SpritePixSz frame_sz, int ms_on_frame, int scale, bool _loop) : imgs(), loop(_loop)
+{
+    if (frame_sz.width == 0)error("sz need to be more than 0");
+    int p_frames = img.Width() / (frame_sz.width * scale);
+    SpriteFromImg(img, p_frames, ms_on_frame, scale);
+}
+
 void Sprite::Draw(Image &canvas, const Point p, double time_start, bool flip_OX, bool flip_OY)
 {
     if (frames == 0)return;
