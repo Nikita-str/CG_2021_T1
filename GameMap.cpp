@@ -281,6 +281,11 @@ GameMap::GameRoomInfo::GameRoomInfo(char room_type)
             int now_value = 0;
             for (int ind = 1; ind < sz; ind++) {
                 char c = line[ind];
+                if ('a' <= c && c <= 'z') {
+                    now_value = now_value * 40 + (c - 'a') + 10;
+                    was_num = true;
+                    if (ind != sz - 1) continue;
+                }
                 if ('0' <= c && c <= '9') {
                     now_value = now_value * 10 + (c - '0');
                     was_num = true;

@@ -171,19 +171,6 @@ Pixel only_r_color(Pixel from, double proc)
 	return Pixel {r,g,b,a};
 }
 
-Pixel win_fn_backup(Point p, Pixel from, double proc)
-{
-	double white_r = (1 - proc) * W2_DIAG;
-
-	int d = 0;
-	if (p.x < W2_WIDTH) d += (W2_WIDTH - p.x) * (W2_WIDTH - p.x);
-	if (p.x > W2_WIDTH) d += (p.x - W2_WIDTH) * (p.x - W2_WIDTH);
-	if (p.y < W2_HEIGHT) d += (W2_HEIGHT - p.y) * (W2_HEIGHT - p.y);
-	if (p.y > W2_HEIGHT) d += (p.y - W2_HEIGHT) * (p.y - W2_HEIGHT);
-	if (d > white_r)return KW_COLOR;
-	return from;
-}
-
 Pixel win_fn(Point p, Pixel from, double proc)
 {
 	double white_r = proc * W2_DIAG;
@@ -252,13 +239,6 @@ int main(int argc, char **argv)
 	LiveObjSprite player_img {HERO_0, SpritePixSz{16}, 125, 2};
 	Player player {gmap.GetPos(GameMap::E_MapPos::Center, Size{.w = 30, .h = 32}), player_img};
 
-	//Image img(HERO_0 + "Walk/down.png");
-	/*
-	Image img(PATH + "floor_3.png");
-	img.PixelsChange([](auto x) {Pixel pix {x}; pix.r = pix.r * 2 + 10; return pix; }, true);
-	Image img90 {img, E_ImgRotation::Rot_90};
-	*/
-
 	Image screenBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, 4);
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  GL_CHECK_ERRORS;
@@ -274,6 +254,7 @@ int main(int argc, char **argv)
 	double die_duration = 3;
 	Player::E_DieType die_type;
 	bool last_die_draw = false;
+	Image lose_img {PATH + "lose.png"};
 
 	bool win = false;
 	double win_time = 0;
@@ -291,7 +272,6 @@ int main(int argc, char **argv)
 		frames++;
 
 		glfwPollEvents();
-
 
 		if (!win) {
 			win = gmap.CheckWin();
@@ -333,6 +313,7 @@ int main(int argc, char **argv)
 			//Image_Draw_SpeedUp_Die(for_die, screenBuffer, proc);
 
 			player.DieDraw(screenBuffer, proc);
+			//lose_img.Draw(screenBuffer, Point {.x = (W_WIDTH - lose_img.Width()) / 2, .y = (W_HEIGHT - lose_img.Height()) / 2}, true);
 		}
 
 		if (win) {

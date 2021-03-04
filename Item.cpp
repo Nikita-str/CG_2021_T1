@@ -2,11 +2,21 @@
 #include "Player.h"
 #include "GameMap.h"
 
+constexpr int case_special(const char* s, int sz)
+{
+    int ret = 0;
+    for (int i = 0; i < sz; i++) ret = ret * 40 + s[i] - 'a' + 10;
+    return ret;
+}
+
+constexpr int case_book = case_special("book", 4);
+constexpr int case_boots = case_special("boots", 5);
+
 Item::Item(int i_lvl, Point _pos) : item_lvl(i_lvl), pos(_pos)
 {
     switch (item_lvl) {
     case -1: item_type = E_ItemTypes::Key; break;
-    //case 0: item_type = E_ItemTypes::Potion; break;
+        //case 0: item_type = E_ItemTypes::Potion; break;
 
     case 0:
         item_type = E_ItemTypes::Other;
@@ -14,8 +24,8 @@ Item::Item(int i_lvl, Point _pos) : item_lvl(i_lvl), pos(_pos)
     case 1:
     {
         int t = std::rand() % 3;
-        if(true || t == 0)item_type = E_ItemTypes::Potion;
-        if(t == 1)item_type = E_ItemTypes::Boots; 
+        if (true || t == 0)item_type = E_ItemTypes::Potion;
+        if (t == 1)item_type = E_ItemTypes::Boots;
         break;
     }
     case 2:
@@ -31,6 +41,15 @@ Item::Item(int i_lvl, Point _pos) : item_lvl(i_lvl), pos(_pos)
         if (true || t == 0)item_type = E_ItemTypes::Potion;
         if (t == 1)item_type = E_ItemTypes::Boots;
         //if (t == 2)item_type = E_ItemTypes::Other;
+        break;
+    }
+    case case_boots:
+    {
+        int t = std::rand() % 18;
+        item_type = E_ItemTypes::Boots;
+        if (t < 11)item_lvl = 1;
+        else if (t < 16)item_lvl = 2;
+        else item_lvl = 3;
         break;
     }
     default:

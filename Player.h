@@ -126,7 +126,7 @@ private:
         Inventory() : micro_inv_canvas(W_WIDTH, TILE_SZ, 4), inv_cell_canvas(W_WIDTH, TILE_SZ, 4), 
                       micro_inv("../resources/micro_inv.png"), key("../resources/key.png"), 
                       inv_cell("../resources/inv_cell.png"), inv_bg("../resources/inv_bg.png"),
-                      inv_cell_active("../resources/inv_cell_now.png")
+                      inv_cell_active("../resources/inv_cell_now.png"), dmg_text_img("../resources/dmg__text.png")
         {
             for (int i = 0; i < (W_WIDTH + TILE_SZ - 1) / TILE_SZ; i++) {
                 micro_inv.Draw(micro_inv_canvas, {i * TILE_SZ, 0}, true);
@@ -137,7 +137,16 @@ private:
                 inv_cell.Draw(inv_cell_canvas, {i * TILE_SZ, 0});
             }
 
-            auto shadow_func = [](auto x) { return (x.a == 255) ? Pixel {52,52,52,255} : x; };
+            auto shadow_func = [](auto x) { return (x.a == 255) ? SHADOW_COLOR : x; };
+            auto shadow_func_wh = [](auto x) { return (x.a == 0 || x.r == x.b && x.r == x.g && x.r == 255) ? TRANSP_COLOR : SHADOW_COLOR; };
+            
+            //damage +++
+            dmg_text_img.PixelsChange(shadow_func_wh, false);
+            for (int i = 0; i < 3; i++) {
+                damage_img.emplace_back("../resources/dmg_"+std::to_string(i + 1) + ".png");
+                damage_img[i].PixelsChange(shadow_func_wh, false);
+            }
+            //damage ---
 
             //boots +++
             Image boots_shadow {"../resources/boots_3.png"};
@@ -193,7 +202,19 @@ private:
                 k_draw.Draw(canvas, Point {p_draw, now_y_pos}, true);
                 now_x_pos = p_draw + 50;
             }
+            
             boots_imgs[boots_lvl].Draw(canvas, Point {now_x_pos, now_y_pos + 3}, true);
+            now_x_pos += 50;
+
+            // damage +++
+            dmg_text_img.Draw(canvas, Point {now_x_pos, now_y_pos - 8 + dmg_text_img.Height() / 2}, true);
+            now_x_pos += dmg_text_img.Width() + 7;
+
+            for (int i = Player::Get().damage; i > 0; i-=3) {
+                damage_img[(i > 3) ? 2 : i - 1].Draw(canvas, Point {now_x_pos, now_y_pos}, true);
+                now_x_pos += 42;
+            }
+            // damage ---
 
             auto hp_info = Player::Get().GetHp();
             for (int i = 0; i < hp_info.second / 10; i++) {
@@ -214,6 +235,8 @@ private:
         Image inv_bg;
         Image key_black;
         Image key;
+        Image dmg_text_img;
+        std::vector<Image> damage_img;
         std::vector<Image> boots_imgs;
 
         static constexpr int Y = W_HEIGHT - TILE_SZ;

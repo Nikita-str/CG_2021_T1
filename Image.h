@@ -48,6 +48,8 @@ inline bool operator< (const Pixel a, const Pixel b)
 constexpr Pixel backgroundColor{0, 0, 0, 0};
 constexpr Pixel WHITE_COLOR{255, 255, 255, 255};
 constexpr Pixel KW_COLOR{210, 255, 255, 255};
+constexpr Pixel SHADOW_COLOR{52,52,52,255};
+constexpr Pixel TRANSP_COLOR {0, 0, 0, 0};
 
 enum class E_ImgRotation { Rot_90 };
 
