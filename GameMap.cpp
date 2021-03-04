@@ -88,11 +88,11 @@ bool GameMap::CheckChangeMap()
         Z(gri.R);
     }
     if (center_pos.y / TILE_SZ >= now_room->gri.map_height) {
-        now_y += 1;
+        now_y -= 1;
         Z(gri.U);
     }
     if (center_pos.y < 0) {
-        now_y -= 1;
+        now_y += 1;
         Z(gri.D);
     }
 
@@ -169,7 +169,12 @@ GameMap::GameRoom::GameRoom(GameMap::GameRoomInfo &_gri, GameMap &_parent) : gri
     for (int i = 0; i < gri.enemies.size(); i++)map_objects.AddEnemy(gri.enemies[i].first, gri.enemies[i].second);
     for (int i = 0; i < gri.door_pos.size(); i++) {
         Point door_p = gri.door_pos[i];
-        map_objects.AddDoor(door_p, (door_p.x == 0) ? E_Dir::LEFT : (door_p.y == 0) ? E_Dir::DOWN : (door_p.y == gri.map_height - 1) ? E_Dir::UP : E_Dir::RIGHT);
+        bool _L = (door_p.x == 0);
+        bool _D = (door_p.y == 0);
+        bool _U = (door_p.y == gri.map_height - 1);
+        bool _R = (door_p.x == gri.map_width - 1);
+        if (_L || _D || _R || _U)map_objects.AddDoor(door_p, _L ? E_Dir::LEFT : _D ? E_Dir::DOWN : _U ? E_Dir::UP : E_Dir::RIGHT);
+        else map_objects.AddDoor(door_p, gri.tile_type[door_p.y][door_p.x - 1] == E_TileType::Wall ? E_Dir::UP : E_Dir::LEFT);
     }
 
 }

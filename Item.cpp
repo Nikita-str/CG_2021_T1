@@ -33,17 +33,17 @@ Item::Item(int i_lvl, Point _pos) : item_lvl(i_lvl), pos(_pos)
     {
         int t = std::rand() % 5;
         if (t < 2)item_type = E_ItemTypes::Potion;
-        if (t == 2)item_type = E_ItemTypes::Boots;
-        if (t == 3)item_type = E_ItemTypes::Book;
-        if (t == 4)item_type = E_ItemTypes::Ring;
+        if (t == 2)item_type = E_ItemTypes::Book;
+        if (t == 3)item_type = E_ItemTypes::Ring;
+        if (t == 4)item_type = E_ItemTypes::Boots;
         break;
     }
     case 3:
     {
         int t = std::rand() % 5;
         if (t < 3)item_type = E_ItemTypes::Potion;
-        if (t == 3)item_type = E_ItemTypes::Boots;
-        if (t == 4)item_type = E_ItemTypes::Book;
+        if (t == 3)item_type = E_ItemTypes::Book;
+        if (t == 4)item_type = E_ItemTypes::Boots;
         break;
     }
     case case_boots:

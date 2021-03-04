@@ -50,7 +50,10 @@ void Enemy::Draw(Image &canvas)
         //TODO:check player pos
         auto &pl = Player::Get();
         //if (fn_can_attack(pl, p, attack_dir)) pl.GetDamage(get_damage(type));
-        if (fn_can_attack(pl, p).first) pl.GetDamage(get_damage(type));
+
+        int dmg_add = (int)(GameTime::Now().GetTime() / (80));
+        if (dmg_add > 5) dmg_add = 5;
+        if (fn_can_attack(pl, p).first) pl.GetDamage(dmg_add + get_damage(type));
 
         attack_cd = true;
         time_start = GameTime::Now().GetTime();

@@ -226,7 +226,7 @@ private:
             dmg_text_img.Draw(canvas, Point {now_x_pos, now_y_pos - 8 + dmg_text_img.Height() / 2}, true);
             now_x_pos += dmg_text_img.Width() + 7;
 
-            for (int i = Player::Get().damage; i > 0; i-=3) {
+            for (int i = Player::Get().damage, dmg_dr = 0; (i > 0) && (dmg_dr < 7); i-=3, dmg_dr++) {
                 damage_img[(i > 3) ? 2 : i - 1].Draw(canvas, Point {now_x_pos, now_y_pos}, true);
                 now_x_pos += 42;
             }
@@ -265,7 +265,7 @@ private:
     Point old_coords {.x = 0, .y = 0};
 
     Pixel color {.r = 255, .g = 255, .b = 0, .a = 255};
-    int move_speed = 100;
+    int move_speed = 90;
     int move_speed_ctrl = 40;
 
     LiveObjSprite &spr;
@@ -281,7 +281,7 @@ private:
     int hp = 40;
     int max_hp = 40;
 
-    int damage = 4;
+    int damage = 70;// 3;
 
 };
 

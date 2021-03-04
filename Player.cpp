@@ -12,11 +12,19 @@ void Player::Attack()
         auto cp = position.CenterPos();
         switch (dir) {
         case E_Dir::UP:
-            GameMap::GetCur()->TryAttack({cp.x, cp.y + 25}, damage);
+        {
+            bool b = GameMap::GetCur()->TryAttack({cp.x, cp.y + 25}, damage);
+            if (!b)b = GameMap::GetCur()->TryAttack({cp.x - 10, cp.y + 25}, damage);
+            if (!b)b = GameMap::GetCur()->TryAttack({cp.x + 10, cp.y + 25}, damage);
             break;
+        }
         case E_Dir::DOWN:
-            GameMap::GetCur()->TryAttack({cp.x, cp.y - 25}, damage);
+        {
+            bool b = GameMap::GetCur()->TryAttack({cp.x, cp.y - 25}, damage);
+            if(!b)b = GameMap::GetCur()->TryAttack({cp.x - 10, cp.y - 25}, damage);
+            if(!b)b = GameMap::GetCur()->TryAttack({cp.x + 10, cp.y - 25}, damage);
             break;
+        }
         case E_Dir::LEFT:
             GameMap::GetCur()->TryAttack({cp.x - 25, cp.y}, damage);
             break;
