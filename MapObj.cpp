@@ -100,7 +100,7 @@ void MapObj::PressE()
     if (itm.inventory) {
         auto &inv = Player::Get().GetInv();
         //inv.insert(inv.end(), std::make_move_iterator(items.begin() + ind_E), std::make_move_iterator(items.begin() + ind_E + 1));
-        inv.push_back(std::move(itm));
+        inv.emplace_back(std::move(itm));
         items.erase(items.begin() + ind_E);
     } else {
         items.erase(items.begin() + ind_E);
