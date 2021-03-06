@@ -165,7 +165,7 @@ private:
             for (int i = 0; i < 3; i++)boots_imgs.emplace_back("../resources/boots_" + std::to_string(i + 1) + ".png");
             //boots ---
 
-            key_black = Image::Image(key);
+            key_black = Image(key);
             key_black.PixelsChange(shadow_func, false);
         }
 

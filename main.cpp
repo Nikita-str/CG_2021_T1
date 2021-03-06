@@ -248,7 +248,7 @@ int main(int argc, char **argv)
 	int frames = 0;
 
 	bool is_alive = true;
-	Image for_die = Image::Image(0, 0, 0);
+	Image for_die = Image(0, 0, 0);
 
 	double die_time = 0;
 	double die_duration = 3;

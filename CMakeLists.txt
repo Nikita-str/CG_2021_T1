@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project(main)
 
-if(WIN32)
 set(CMAKE_CXX_STANDARD 20)
+
+if(WIN32)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -openmp")
 else()
-set(CMAKE_CXX_STANDARD 14)
 endif()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)

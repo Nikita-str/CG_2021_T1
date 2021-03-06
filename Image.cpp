@@ -184,7 +184,7 @@ void Image::Draw(Image &canvas, std::function<Pixel(Point, Pixel)> PixFunc) cons
 
 void Image::FastDraw(Image &canvas, int lines, int from_line) const
 {
-    std::memcpy(canvas.data + (from_line * canvas.width), data, canvas.width * lines * sizeof(Pixel));
+    memcpy(canvas.data + (from_line * canvas.width), data, canvas.width * lines * sizeof(Pixel));
 }
 
 void Image::PixelsChange(std::function<Pixel(Pixel)> PixFunc, bool with_hash_pixel)
