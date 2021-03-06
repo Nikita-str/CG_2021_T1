@@ -24,7 +24,8 @@ z-
 /E: 0, 0, 0, 0, 0, 0, 0, 0 
 E: 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0
 ///I: 2, 1, 2, 3, 0, 0, 0, 1, 1
-I: boots, 0, 0
+I: boots
+I: 0, 0
 
 /I: - rarity of Items in the same order as they stay on map
 

@@ -21,6 +21,8 @@ void MapObj::AfterLoad(int tile_w, int tile_h)
         if (pos.y / TILE_SZ >= tile_h - 1) { pos.y -= TILE_SZ; change_pos = true; }
         if (change_pos)enemies[i].mov.SetCenter(pos);
     }
+    ind_E = -1;
+    ind_D = -1;
 }
 
 void MapObj::DrawItems(Image &canvas)
@@ -88,6 +90,7 @@ void MapObj::PressE()
         if (Player::Get().HaveKey())Player::Get().KeyDec();
         doors[ind_D].open = true;
         ind_D = -1;
+        ind_E = -1;
         return;
     }
     if (ind_E < 0)return;
