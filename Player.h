@@ -193,6 +193,7 @@ private:
             if (!GameMap::GetCur()->CanThrowItem(pos))return;
             auto &itm = inv_item[inv_pos];
             itm.pos = Point {pos.x / TILE_SZ, pos.y / TILE_SZ};
+            itm.ia(false);
             GameMap::GetCur()->GetItems().push_back(std::move(itm));
             inv_item.erase(inv_item.begin() + inv_pos);
             inv_pos = -1;
